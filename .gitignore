@@ -1,0 +1,19 @@
+#ignore out files from compilation of tex file
+
+# LaTeX temporary files
+*.aux
+*.log
+*.toc
+
+# PDF output
+*.pdf
+
+# Latexmk
+*.fdb_latexmk
+
+# SyncTeX
+*.synctex.gz
+
+# LaTeX Beamer
+*.out
+*.fls
