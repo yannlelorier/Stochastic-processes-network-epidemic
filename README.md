@@ -15,10 +15,10 @@ The COVID-19 pandemic is rapidly spreading through the world. Which raises the n
 
 | Municipio        | Población |     fecha_1        | ...  |       fecha_n      |
 |:----------------:|:---------:|:------------------:|:----:|:------------------:|
-| Zinacantán       | 100000    |   c<sub>11</sub>   | ...  |   c<sub>n1</sub>   |
-| Chenalhó         | 100000    |   c<sub>12</sub>   | ...  |   c<sub>n2</sub>   |
+| Zinacantán       | 150000    |   c<sub>11</sub>   | ...  |   c<sub>n1</sub>   |
+| Chenalhó         | 160000    |   c<sub>12</sub>   | ...  |   c<sub>n2</sub>   |
 | Acteal           | 100000    |   c<sub>13</sub>   | ...  |   c<sub>n3</sub>   |
-| San Juan Chamula | 100000    |   c<sub>14</sub>   | ...  |   c<sub>n4</sub>   |
+| San Juan Chamula | 200000    |   c<sub>14</sub>   | ...  |   c<sub>n4</sub>   |
 |...|
 
 Where C<sub>ij</sub> is the number of cases (confirmed, suspicious, or deaths) on the i-th day for i in {1, 2, 3, ..., n}, and the j-th municipality in {1, 2, 3, ..., m}\
@@ -48,23 +48,26 @@ The server has mainly two functions: load the API for python or load the automat
 
 ## Topics
 
-1. **System Calls**
+1. **System Calls** or **pipes**
    - C++ script call for python data extraction
 2. **Threads**
    - Graph production.
 3. **Inter Process Communication**
     - Client/Server communication
+4. **Dynamic Memory**
+    - To store the csv information in a matrix
 
 ## Use Cases
 
-Due to the uncertain nature of the disease, it's common to experience several unreported cases. After the meticulous revision of these cases, the respective organizations then update the data which leads to variations in the data obtained some days before. In the project, we will develop a function that will calculate these as a tool to help the user understand the average latency from the initial to the final values.
+Due to the uncertain nature of the disease, it's common to experience several unreported cases. After the meticulous revision of these cases, the respective organizations update the data which leads to variations in the data obtained some days before. In the project, we will develop a function that will calculate these as a tool to help the user understand the average latency from the initial to the final values.
 
 ## Dependencies
 
 - C++ environment (gpp 2.0+)
-- Python 3 with the following libraries: [```selenium```](https://github.com/SeleniumHQ/selenium) and [```sodapy```](https://pypi.org/project/sodapy/) 
+- Python 3 with the following libraries: [```selenium```](https://github.com/SeleniumHQ/selenium) and [```sodapy```](https://pypi.org/project/sodapy/), and [```pandas```](https://pandas.pydata.org)
 
 ## References
 
 - [Socrata Open APIs](https://dev.socrata.com/)
+- [CDC Dataset on the novel Coronavirus](https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/cases-in-us.html)
 - [CONACYT - COVID-19](https://datos.covid-19.conacyt.mx/#DOView)
