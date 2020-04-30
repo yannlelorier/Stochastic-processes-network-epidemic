@@ -1,73 +1,79 @@
 
-# Covid-19-tracker-USA-Mex
+# Covid-19-tracker-simulator
 
-## Authors
+## 1. Authors
 
 [Carlos García](https://github.com/cxrlos)\
 [Victor Coeto](https://github.com/vcoetoG)\
 [Yann Le Lorier](https://github.com/yannlelorier)
 
-## Context
+## 2. Context
 
-The COVID-19 pandemic is rapidly spreading through the world. Which raises the need to make fast decisions with the help of programs able to represent useful information, in real time. Information is being constantly updated, and in some cases, the data from past cases needs to be updated:
+The COVID-19 pandemic is rapidly spreading through the world. With this in view, we wanted to create a program using graph theory to study how a disease spreads through a population, using the classic Gillespie algorithm found [here](https://link.springer.com/content/pdf/bbm%3A978-3-319-50806-1%2F1.pdf).
 
-### [CONACYT Website](https://datos.covid-19.conacyt.mx/#DOView) information available
+## 3. Project Description
 
-| Municipio        | Población |     fecha_1        | ...  |       fecha_n      |
-|:----------------:|:---------:|:------------------:|:----:|:------------------:|
-| Zinacantán       | 150000    |   c<sub>11</sub>   | ...  |   c<sub>n1</sub>   |
-| Chenalhó         | 160000    |   c<sub>12</sub>   | ...  |   c<sub>n2</sub>   |
-| Acteal           | 100000    |   c<sub>13</sub>   | ...  |   c<sub>n3</sub>   |
-| San Juan Chamula | 200000    |   c<sub>14</sub>   | ...  |   c<sub>n4</sub>   |
-|...|
+### 3. 1 The Gillespie algorithm
 
-Where C<sub>ij</sub> is the number of cases (confirmed, suspicious, or deaths) on the i-th day for i in {1, 2, 3, ..., n}, and the j-th municipality in {1, 2, 3, ..., m}\
-We are proposing a solution to pull the information from mexican authorities, such as INEGI, the Dirección General de Epidemiología, or the new CONACYT website, and even the Centers for Disease and Control (CDC), and display data in a graphical way using a client/server architecture.
+The Gillespie algorithm is a methodology that aims to track Markovian processes where objects change status. In this case, we wish to use this algorithm in a given starting graph, see the end graph, and the changes over time. It is based on an epidemics model called SIR (Susceptible, Infected, Recovered).
 
-## Project Description
+#### 3.1.1 Input/Output
 
-The CDC is part of several organizations that uses the Socrata Open Data APIs, a project created to pull information from governmental institutions, NGOs from around the world.\
-After reading the documentation on the APIs available to pull information from the CDC, we realized there is no support to use the API with the C or C++ languages, But there exists support for Python.
+- **Input** Network graph G, a transmission rate &tau;, a recovery rate &gamma;, a set of index node(s) of ```initial_infections```, maximum time t<sub>max</sub>
+- **Output** Lists time, S, I and R giving number in each state at each time, *i.e.* S := |G|-len(```infected_nodes```), I:=len(```infected_nodes```) and R:=len( ```infected_nodes```)
 
-Nonetheless, we plan to follow these steps
+#### 3.1.2 Variables
 
-- [ ] Pull the information using the ```sodapy``` module available from the [Socrata documentation](https://dev.socrata.com/)
-- [ ] Create a method that automatically downloads the INEGI's CSV data file and that passes the values to the desired format.
-- [ ] Generate a function that compares both the INEGI and CDC values.
-- [ ] Develop a function that calculates the difference between the insertion-day values and the further updates.
-- [ ] Produce graphs based on the downloaded data and the previously generated values.
-- [ ] Transition to a Client/Server architecture.
+- The infected nodes are updated. In the very first iteration, the infected nodes are the ```initial_infections```\
+- The ```at_risk_nodes``` are updated as the nodes which are direct neighbors of infected nodes\
+- The infection rate in the at_risk_nodes is updated as &tau;*```len(infected_neighbors)```\
+- The ```total_infection_rate``` is updated as the sum of all the infection rates in the ```at_risk_nodes``` group\
+- The ```total_recovery_rate``` is updated as &gamma;*```len(infected_nodes)```
+- ```total_rate``` is updated as the ```total_transmission_rate + total_recovery_rate```
+- ```time``` is updated as the exponential variation taking as argument the ```total_rate```
 
-Using a Python driver that we can use to take information from the CDC, we will have to recalculate the information provided by the website, because according to the sub-secretary of Health López-Gatell, the number of COVID-19 cases provided for a previous day may or may not change. So each time that the client requests information, all of the registries in the INEGI table of cases will have to be re-processed.\
-Since the data provided can be changed, we are going to make a local file which will store the past CSV and when the server starts up we will compare it with the new CSV so we know how trust worthy the information is, we will have a counter that tells us how many values have been changed and based on that we can know how trust worthy the information is.\
-The server has mainly two functions: load the API for python or load the automatic data downloader for the CONACYT.
+#### 3.1.3 explanation of an iteration
 
-### Progress
+The main loop iterating, until ```time``` &lt; t<sub>max</sub> and the ```total_rate``` &lt; 0
+- r is updated as a uniform random distribution taking 0 and ```total_rate```, then
+    - if r &lt; ```total_recovery_rate``` then remove one node from the infected nodes, and reduce infection rate
+    - if not, then add one node in the ```at_risk_nodes``` to put it in the ```infected_nodes``` group, and update its neghbors to ```at_risk_nodes``` group.
+- update ```times```, S, I and R
+- update total recovery rate, total infection rate, and total rate
+- ```time``` is updated as ```time + exponential_variate(total rate)```
+
+### 3.2 Execution of the project
+
+The following steps will be taken:
+
+- [ ] From a given file, the initial graph is read
+- [ ] The iteration of the algorithm is made and logged into a buffer to write into a pipe in order to create an epidemic_log file
+- [ ] Various files can be loaded into the program at the same time using threads
+- [ ] An output graph is dumped, to see the final result at a given time.
+
+### 3.3 Progress
 
 ![progress](https://progress-bar.dev/0/ "progress")
 
-## Topics
+## 4. Topics
 
 1. **System Calls** or **pipes**
-   - C++ script call for python data extraction
+   - To log the information into a file
 2. **Threads**
-   - Graph production.
+   - Graph creation
 3. **Inter Process Communication**
     - Client/Server communication
 4. **Dynamic Memory**
-    - To store the csv information in a matrix
+    - To store the graph information in an array
 
-## Use Cases
+## 5. Use Cases
 
-Due to the uncertain nature of the disease, it's common to experience several unreported cases. After the meticulous revision of these cases, the respective organizations update the data which leads to variations in the data obtained some days before. In the project, we will develop a function that will calculate these as a tool to help the user understand the average latency from the initial to the final values.
+We wish to see different snapshots at different periods of time, letting the algorithm take its course up until a certain point in time.
 
-## Dependencies
+## 6. Dependencies
 
 - C++ environment (gpp 2.0+)
-- Python 3 with the following libraries: [```selenium```](https://github.com/SeleniumHQ/selenium) and [```sodapy```](https://pypi.org/project/sodapy/), and [```pandas```](https://pandas.pydata.org)
 
 ## References
 
-- [Socrata Open APIs](https://dev.socrata.com/)
-- [CDC Dataset on the novel Coronavirus](https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/cases-in-us.html)
-- [CONACYT - COVID-19](https://datos.covid-19.conacyt.mx/#DOView)
+- [Stochastic simulations of Epidemics](https://link.springer.com/content/pdf/bbm%3A978-3-319-50806-1%2F1.pdf)
