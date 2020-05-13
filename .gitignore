@@ -17,3 +17,9 @@
 # LaTeX Beamer
 *.out
 *.fls
+
+#vscode config
+.vscode/
+
+#cmake build
+build/

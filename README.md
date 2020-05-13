@@ -73,6 +73,16 @@ We wish to see different snapshots at different periods of time, letting the alg
 ## 6. Dependencies
 
 - C++ environment (gpp 2.0+)
+- [SFML library](https://www.sfml-dev.org/tutorials/2.5/start-linux.php)
+
+## 7. Running the program
+
+```sh
+mkdir build && cd build
+cmake ..
+make
+./covid-sim
+```
 
 ## References
 
