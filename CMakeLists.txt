@@ -10,5 +10,5 @@ project(covid-sim)
 # set(SFML_DIR "<sfml root prefix>/lib/cmake/SFML")
 
 find_package(SFML 2.5 COMPONENTS graphics audio REQUIRED)
-add_executable(covid-sim gillespie.cpp)
-target_link_libraries(covid-sim sfml-graphics sfml-audio)
+add_executable(covid-sim test_tree.cpp GraphViewer.cpp)
+target_link_libraries(covid-sim sfml-graphics sfml-window sfml-system)

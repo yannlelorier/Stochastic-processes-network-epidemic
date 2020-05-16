@@ -35,7 +35,9 @@ The Gillespie algorithm is a methodology that aims to track Markovian processes 
 #### 3.1.3 explanation of an iteration
 
 The main loop iterating, until ```time``` &lt; t<sub>max</sub> and the ```total_rate``` &lt; 0
+
 - r is updated as a uniform random distribution taking 0 and ```total_rate```, then
+
     - if r &lt; ```total_recovery_rate``` then remove one node from the infected nodes, and reduce infection rate
     - if not, then add one node in the ```at_risk_nodes``` to put it in the ```infected_nodes``` group, and update its neghbors to ```at_risk_nodes``` group.
 - update ```times```, S, I and R
@@ -74,6 +76,7 @@ We wish to see different snapshots at different periods of time, letting the alg
 
 - C++ environment (gpp 2.0+)
 - [SFML library](https://www.sfml-dev.org/tutorials/2.5/start-linux.php)
+- cmake (3.1 minimum)
 
 ## 7. Running the program
 
