@@ -44,11 +44,13 @@ class GraphViewer {
         void changeScale(int multiplier);
         void drawTree();
         sf::Vector2f recursiveDrawTree(GraphNode<int> * _root, int node_y);
-        void drawNode(GraphNode<int> * node, const sf::Vector2f & position);
+        sf::Vector2f recursiveDrawGraph(GraphNode<int> * _root, int node_x, int node_y);
+        void drawCircleGraph(std::vector<GraphNode<int> > graph, int _rad);
+        void drawNode(GraphNode<int> node, const sf::Vector2f & position);
         void drawLine(const sf::Vector2f & origin, const sf::Vector2f & destination);
     public:
         // Constructor
-        GraphViewer (std::string window_title, std::string font_name, void (*menu)(AVLGraph<int> *), AVLGraph<int> * tree);
+        GraphViewer (std::string window_title, std::string font_name, void (*menu)(std::vector<GraphNode<int> > graph), std::vector<GraphNode <int> > * graph);
         //TreeViewer (std::string window_name, std::string font_name);
 
         // Public method to start the drawing process

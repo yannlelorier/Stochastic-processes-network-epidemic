@@ -2,25 +2,34 @@
 #define GRAPH_NODE_H
 
 #include <iostream>
+#define MAX_NODES 10
+
+struct Edge;
 
 template <class T>
 class GraphNode {
     private:
-        T data;
-        int height = 1;
-        GraphNode<T> * left = nullptr;
-        GraphNode<T> * right = nullptr;
+        T index;
+        bool infected;
+        std::vector<Edge> connections;
+        int height;
+
     public:
-        GraphNode () {}
-        GraphNode (T _data) { data = _data; }
-        ~GraphNode () { left = nullptr; right = nullptr; }
-        void setData (T _data) { data = _data; }
-        T getData () { return data; }
-        void setLeft (GraphNode<T> * _node) { left = _node; }
-        void setRight (GraphNode<T> * _node) { right = _node; }
-        GraphNode<T> * getLeft () { return left; }
-        GraphNode<T> * getRight () { return right; }
-        void setHeight (int _height) { height = _height; }
+        GraphNode (T _index) { index = _index; infected = false; connections = {}; }
+        GraphNode (bool is_inf) { infected = is_inf; }
+        ~GraphNode () {}
+        T getIndex () { return index; }
         int getHeight () { return height; }
+        bool isInfected () { return infected; }
+        void * getConnections () { return connections; }
+        void setIndex (T _index) { index = _index; }
+        void infect () { infected = true; }
+        void recover () { infected = false; }
+};
+
+struct Edge {
+    GraphNode<int> connected_to[2];
+    double tau;
+    double gamma;
 };
 #endif
