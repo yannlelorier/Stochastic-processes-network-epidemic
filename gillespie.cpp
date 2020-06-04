@@ -146,7 +146,7 @@ void test_graph()
         std::vector<Edge> connections = graph[i].getConnections();
         for (int j = 0; j < connections.size(); j++)
         {
-            std::cout << "\t- " << "Node " << connections[j].connected_to[1] << std::endl;
+            std::cout << "\t- " << "Node " << connections[j].connected_to[1]->getindex() << std::endl;
         }
         
     }
