@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 
-GraphViewer::GraphViewer(std::string window_title, std::string font_name, void (*menu)(AVLGraph<int> *), AVLGraph<int> * tree) : window(sf::VideoMode(800, 600), window_title), menu_thread(menu, tree)
+GraphViewer::GraphViewer(std::string window_title, std::string font_name, void (*menu)(AVLGraph<int> *), AVLGraph<int> * graph) : window(sf::VideoMode(800, 600), window_title), menu_thread(menu, graph)
 {
     // change the position of the window (relatively to the desktop)
     window.setPosition(sf::Vector2i(700, 100));
@@ -10,8 +10,8 @@ GraphViewer::GraphViewer(std::string window_title, std::string font_name, void (
     // Load the font
     font.loadFromFile(font_name);
 
-    // Store the reference to the binary tree
-    tree_pointer = tree;
+    // Store the reference to the binary graph
+    graph_pointer = graph;
 
     // Prepare all the drawable elements
     configure();
@@ -148,7 +148,7 @@ void GraphViewer::mainDraw()
 
     // Draw all the elements
     drawTitle();
-    drawTree();
+    drawGraph();
 
     // Draw everything
     window.display();
@@ -162,7 +162,7 @@ void GraphViewer::drawTitle()
     // Cut the number of decimals shown
     radius_text = radius_text.substr(0, radius_text.length()-5);
     // Change the text displayed
-    title.setString("TREE VIEWER\nTime elapsed: " + std::to_string(total_time.asSeconds()));
+    title.setString("Graph Viewer\nTime elapsed: " + std::to_string(total_time.asSeconds()));
     info.setString( "Radius: " + radius_text +
                     "\nFont size: " + std::to_string(node_font_size));
 
@@ -185,90 +185,91 @@ void GraphViewer::drawAnimatedCircle()
 }
 */
 
-void GraphViewer::drawTree()
+void GraphViewer::drawGraph()
 {
     // Initialize the margin to the left
     global_node_x = 100;
     global_node_y = 200;
-    recursiveDrawTree(tree_pointer->getRoot(), global_node_y);
+    // recursiveDrawTree(tree_pointer->getRoot(), global_node_y);
+
 }
 
 // Draw the whole tree using an in-order recursive traversal
-sf::Vector2f GraphViewer::recursiveDrawTree(GraphNode<int> * _root, int node_y)
-{
-    if(_root != nullptr)
-    {
-        sf::Vector2f node_position;
-        sf::Vector2f left_position;
-        sf::Vector2f right_position;
+// sf::Vector2f GraphViewer::recursiveDrawTree(TreeNode<int> * _root, int node_y)
+// {
+//     if(_root != nullptr)
+//     {
+//         sf::Vector2f node_position;
+//         sf::Vector2f left_position;
+//         sf::Vector2f right_position;
 
-        // Draw left branch
-        if(_root->getLeft())
-        {
-            // Draw the circle and data for the node
-            left_position = recursiveDrawTree(_root->getLeft(), node_y + v_offset);
-        }
-        // Compute the position for this node
-        node_position = sf::Vector2f(global_node_x, node_y);
-        global_node_x += h_offset;
-        // Draw right branch
-        if(_root->getRight())
-        {
-            // Draw the circle and data for the node
-            right_position = recursiveDrawTree(_root->getRight(), node_y + v_offset);
-        }
+//         // Draw left branch
+//         if(_root->getLeft())
+//         {
+//             // Draw the circle and data for the node
+//             left_position = recursiveDrawTree(_root->getLeft(), node_y + v_offset);
+//         }
+//         // Compute the position for this node
+//         node_position = sf::Vector2f(global_node_x, node_y);
+//         global_node_x += h_offset;
+//         // Draw right branch
+//         if(_root->getRight())
+//         {
+//             // Draw the circle and data for the node
+//             right_position = recursiveDrawTree(_root->getRight(), node_y + v_offset);
+//         }
 
-        // Draw the lines to connect with the children
-        if(_root->getLeft())
-        {
-            // First draw the line so that he node is drawn on top
-            drawLine(node_position, left_position);
-        }
-        if(_root->getRight())
-        {
-            // First draw the line so that the node is drawn on top
-            drawLine(node_position, right_position);
-        }
+//         // Draw the lines to connect with the children
+//         if(_root->getLeft())
+//         {
+//             // First draw the line so that he node is drawn on top
+//             drawLine(node_position, left_position);
+//         }
+//         if(_root->getRight())
+//         {
+//             // First draw the line so that the node is drawn on top
+//             drawLine(node_position, right_position);
+//         }
 
-        // Draw the node after the lines connecting it to its sons
-        drawNode(_root, node_position);
+//         // Draw the node after the lines connecting it to its sons
+//         drawNode(_root, node_position);
 
-        return node_position;
-    }
-    // Return case for an emptry tree (should not be used)
-    return sf::Vector2f(0, 0);
-}
+//         return node_position;
+//     }
+//     // Return case for an emptry tree (should not be used)
+//     return sf::Vector2f(0, 0);
+// }
 
 void GraphViewer::drawNode(GraphNode<int> * node, const sf::Vector2f & position)
 {
-    // Set the position of the circle
-    circle.setPosition(position);
-    // Set different colors for leaf or inner nodes
-    if (!node->getLeft() && !node->getRight())
-        circle.setFillColor(sf::Color::Yellow);
-    else
-        circle.setFillColor(sf::Color::Red);
-    window.draw(circle);
+    // // Set the position of the circle
+    // circle.setPosition(position);
+    // // Set different colors for leaf or inner nodes
+    // if (!node->getLeft() && !node->getRight())
+    //     circle.setFillColor(sf::Color::Yellow);
+    // else
+    //     circle.setFillColor(sf::Color::Red);
+    // window.draw(circle);
 
-    // Set the text of the node
-    data.setString(std::to_string(node->getData()));
-    // Center the origin of the text
-    sf::FloatRect textRect = data.getLocalBounds();
-    // Set the position of the text
-    data.setOrigin(textRect.left + textRect.width/2.0f, textRect.top  + textRect.height/2.0f);
-    data.setPosition(position);
-    window.draw(data);
+    // // Set the text of the node
+    // data.setString(std::to_string(node->getData()));
+    // // Center the origin of the text
+    // sf::FloatRect textRect = data.getLocalBounds();
+    // // Set the position of the text
+    // data.setOrigin(textRect.left + textRect.width/2.0f, textRect.top  + textRect.height/2.0f);
+    // data.setPosition(position);
+    // window.draw(data);
 
-    // Set a new position for the height text
-    sf::Vector2f position_offset(circle.getRadius(), circle.getRadius());
-    // Set the height of the node
-    height.setString(std::to_string(node->getHeight()));
-    // Center the origin of the text
-    textRect = height.getLocalBounds();
-    // Set the position of the text
-    height.setOrigin(textRect.left + textRect.width/2.0f, textRect.top  + textRect.height/2.0f);
-    height.setPosition(position + position_offset);
-    window.draw(height);
+    // // Set a new position for the height text
+    // sf::Vector2f position_offset(circle.getRadius(), circle.getRadius());
+    // // Set the height of the node
+    // height.setString(std::to_string(node->getHeight()));
+    // // Center the origin of the text
+    // textRect = height.getLocalBounds();
+    // // Set the position of the text
+    // height.setOrigin(textRect.left + textRect.width/2.0f, textRect.top  + textRect.height/2.0f);
+    // height.setPosition(position + position_offset);
+    // window.draw(height);
 }
 
 // Draw the lines between the nodes.

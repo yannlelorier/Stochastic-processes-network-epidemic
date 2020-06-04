@@ -80,12 +80,12 @@ We wish to see different snapshots at different periods of time, letting the alg
 
 ## 7. Running the program
 
-```sh
+~~~sh
 mkdir build && cd build
 cmake ..
 make
 ./covid-sim
-```
+~~~
 
 ## References
 
