@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 
-GraphViewer::GraphViewer(std::string window_title, std::string font_name, void (*menu)(std::vector<GraphNode <int> > graph), std::vector<GraphNode<int> > * graph)
+GraphViewer::GraphViewer(std::string window_title, std::string font_name, void (*menu)(AVLGraph<int> *), AVLGraph<int> * graph) : window(sf::VideoMode(800, 600), window_title), menu_thread(menu, graph)
 {
     // change the position of the window (relatively to the desktop)
     window.setPosition(sf::Vector2i(700, 100));
@@ -10,8 +10,8 @@ GraphViewer::GraphViewer(std::string window_title, std::string font_name, void (
     // Load the font
     font.loadFromFile(font_name);
 
-    // Store the reference to the binary tree
-    tree_pointer = tree;
+    // Store the reference to the binary graph
+    graph_pointer = graph;
 
     // Prepare all the drawable elements
     configure();
@@ -148,7 +148,7 @@ void GraphViewer::mainDraw()
 
     // Draw all the elements
     drawTitle();
-    drawTree();
+    drawGraph();
 
     // Draw everything
     window.display();
@@ -162,7 +162,7 @@ void GraphViewer::drawTitle()
     // Cut the number of decimals shown
     radius_text = radius_text.substr(0, radius_text.length()-5);
     // Change the text displayed
-    title.setString("Epidemic Simulator\nTime elapsed: " + std::to_string(total_time.asSeconds()));
+    title.setString("Graph Viewer\nTime elapsed: " + std::to_string(total_time.asSeconds()));
     info.setString( "Radius: " + radius_text +
                     "\nFont size: " + std::to_string(node_font_size));
 
@@ -185,50 +185,17 @@ void GraphViewer::drawAnimatedCircle()
 }
 */
 
-void GraphViewer::drawTree()
+void GraphViewer::drawGraph()
 {
     // Initialize the margin to the left
     global_node_x = 100;
     global_node_y = 200;
     // recursiveDrawTree(tree_pointer->getRoot(), global_node_y);
-    GraphNode<int> node1 = GraphNode<int>(1);
-    GraphNode<int> node2 = GraphNode<int>(2);
-    GraphNode<int> node3 = GraphNode<int>(3);
-    std::vector<GraphNode<int>> graph = {node1, node2, node3};
-    drawCircleGraph(graph, 200);
+
 }
 
 // Draw the whole tree using an in-order recursive traversal
-//recursive neighbor drawing?
-
-void GraphViewer::drawCircleGraph(std::vector<GraphNode<int> > _graph, int _rad)
-{
-    sf::Vector2f center (_rad, _rad);
-    int graphSize = _graph.size();
-    double degreeOffset = 360/graphSize;
-    std::cout << "degree offset: " << degreeOffset << std::endl;
-    sf::Vector2f nodepos (400, 200);
-    drawNode(_graph[0], nodepos);
-}
-
-// sf::Vector2f GraphViewer::recursiveDrawGraph(GraphNode<int> * _nodeCurrent, int node_x, int node_y)
-// {
-//     if (_nodeCurrent != nullptr)
-//     {
-//         sf::Vector2f node_pos;
-//         sf::Vector2f neighbor_pos;
-
-//         //left neighbors
-
-//         if(_nodeCurrent->getConnections())
-//         {
-
-//         }
-//     }
-//     return sf::Vector2f(0, 0);
-// }
-
-// sf::Vector2f GraphViewer::recursiveDrawTree(GraphNode<int> * _root, int node_y)
+// sf::Vector2f GraphViewer::recursiveDrawTree(TreeNode<int> * _root, int node_y)
 // {
 //     if(_root != nullptr)
 //     {
@@ -273,43 +240,36 @@ void GraphViewer::drawCircleGraph(std::vector<GraphNode<int> > _graph, int _rad)
 //     return sf::Vector2f(0, 0);
 // }
 
-void GraphViewer::drawNode(GraphNode<int> node, const sf::Vector2f & position)
+void GraphViewer::drawNode(GraphNode<int> * node, const sf::Vector2f & position)
 {
-    // Set the position of the circle
-    circle.setPosition(position);
-    // Set different colors for leaf or inner nodes
-    //TODO SET FILL COLORS :
-    //RED IF INFECTED
-    //ORANGE/YELLOW IF SUSCEPTIBLE
-    // GREEN IF RECOVERED
+    // // Set the position of the circle
+    // circle.setPosition(position);
+    // // Set different colors for leaf or inner nodes
     // if (!node->getLeft() && !node->getRight())
     //     circle.setFillColor(sf::Color::Yellow);
     // else
     //     circle.setFillColor(sf::Color::Red);
     // window.draw(circle);
 
-    circle.setFillColor(sf::Color::Yellow);
-    window.draw(circle);
+    // // Set the text of the node
+    // data.setString(std::to_string(node->getData()));
+    // // Center the origin of the text
+    // sf::FloatRect textRect = data.getLocalBounds();
+    // // Set the position of the text
+    // data.setOrigin(textRect.left + textRect.width/2.0f, textRect.top  + textRect.height/2.0f);
+    // data.setPosition(position);
+    // window.draw(data);
 
-    // Set the text of the node
-    data.setString(std::to_string(node.getIndex()));
-    // Center the origin of the text
-    sf::FloatRect textRect = data.getLocalBounds();
-    // Set the position of the text
-    data.setOrigin(textRect.left + textRect.width/2.0f, textRect.top  + textRect.height/2.0f);
-    data.setPosition(position);
-    window.draw(data);
-
-    // Set a new position for the height text
-    sf::Vector2f position_offset(circle.getRadius(), circle.getRadius());
-    // Set the height of the node
-    height.setString(std::to_string(node.getHeight()));
-    // Center the origin of the text
-    textRect = height.getLocalBounds();
-    // Set the position of the text
-    height.setOrigin(textRect.left + textRect.width/2.0f, textRect.top  + textRect.height/2.0f);
-    height.setPosition(position + position_offset);
-    window.draw(height);
+    // // Set a new position for the height text
+    // sf::Vector2f position_offset(circle.getRadius(), circle.getRadius());
+    // // Set the height of the node
+    // height.setString(std::to_string(node->getHeight()));
+    // // Center the origin of the text
+    // textRect = height.getLocalBounds();
+    // // Set the position of the text
+    // height.setOrigin(textRect.left + textRect.width/2.0f, textRect.top  + textRect.height/2.0f);
+    // height.setPosition(position + position_offset);
+    // window.draw(height);
 }
 
 // Draw the lines between the nodes.

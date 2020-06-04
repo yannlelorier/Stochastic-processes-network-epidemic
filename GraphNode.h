@@ -2,34 +2,45 @@
 #define GRAPH_NODE_H
 
 #include <iostream>
-#define MAX_NODES 10
+#include <vector>
 
-struct Edge;
+template <class T>
+class GraphNode;
+
+typedef struct Edge{
+    GraphNode<int> * connected_to[2];
+    double tau;
+    //double gamma;
+}edge_t;
 
 template <class T>
 class GraphNode {
     private:
         T index;
+        GraphNode<int> * self;
+        int height = 1;
         bool infected;
         std::vector<Edge> connections;
-        int height;
-
     public:
+        GraphNode () {}
         GraphNode (T _index) { index = _index; infected = false; connections = {}; }
-        GraphNode (bool is_inf) { infected = is_inf; }
-        ~GraphNode () {}
-        T getIndex () { return index; }
+        ~GraphNode () {  } //empty vector
+        void setindex (T _index) { index = _index; }
+        T getindex () { return index; }
+        void setHeight (int _height) { height = _height; }
         int getHeight () { return height; }
-        bool isInfected () { return infected; }
-        void * getConnections () { return connections; }
-        void setIndex (T _index) { index = _index; }
-        void infect () { infected = true; }
-        void recover () { infected = false; }
+        void infect() { infected = true; }
+        void recover() { infected = false; }
+        std::vector<Edge> getConnections () { return connections; }
+        void setConnection (GraphNode<int> * _node) { 
+            edge_t newEdge;
+            newEdge.connected_to[0] = self;
+            newEdge.connected_to[1] = _node;
+            newEdge.tau = 0.04;
+            connections.push_back(newEdge);
+        } //TODO check if this correct?
 };
 
-struct Edge {
-    GraphNode<int> connected_to[2];
-    double tau;
-    double gamma;
-};
+
+
 #endif

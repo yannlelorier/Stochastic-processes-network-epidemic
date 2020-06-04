@@ -20,7 +20,7 @@ class GraphViewer {
         sf::Time elapsed_time;
         sf::Time total_time;
         // Tree variables
-        AVLGraph<int> * tree_pointer = nullptr;
+        AVLGraph<int> * graph_pointer = nullptr;
 
         // Additional variables for drawing 
         int node_radius = 25;
@@ -42,15 +42,13 @@ class GraphViewer {
         // Methods for drawing the tree
         void resetScale();
         void changeScale(int multiplier);
-        void drawTree();
-        sf::Vector2f recursiveDrawTree(GraphNode<int> * _root, int node_y);
-        sf::Vector2f recursiveDrawGraph(GraphNode<int> * _root, int node_x, int node_y);
-        void drawCircleGraph(std::vector<GraphNode<int> > graph, int _rad);
-        void drawNode(GraphNode<int> node, const sf::Vector2f & position);
+        void drawGraph();
+        // sf::Vector2f recursiveDrawTree(GraphNode<int> * _root, int node_y);
+        void drawNode(GraphNode<int> * node, const sf::Vector2f & position);
         void drawLine(const sf::Vector2f & origin, const sf::Vector2f & destination);
     public:
         // Constructor
-        GraphViewer (std::string window_title, std::string font_name, void (*menu)(std::vector<GraphNode<int> > graph), std::vector<GraphNode <int> > * graph);
+        GraphViewer (std::string window_title, std::string font_name, void (*menu)(AVLGraph<int> *), AVLGraph<int> * tree);
         //TreeViewer (std::string window_name, std::string font_name);
 
         // Public method to start the drawing process

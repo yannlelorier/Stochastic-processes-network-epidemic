@@ -9,6 +9,6 @@ project(covid-sim)
 ## In most cases better set in the CMake cache
 # set(SFML_DIR "<sfml root prefix>/lib/cmake/SFML")
 
-find_package(SFML 2.5 COMPONENTS graphics audio REQUIRED)
+find_package(SFML 2.5 COMPONENTS graphics REQUIRED)
 add_executable(covid-sim gillespie.cpp GraphViewer.cpp)
 target_link_libraries(covid-sim sfml-graphics sfml-window sfml-system)
