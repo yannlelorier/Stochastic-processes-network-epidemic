@@ -5,6 +5,7 @@
 */
 
 //TODO gillespie implementation here
+//use std::exponential_distribution for per-edge tau (infection rate)
 
 #include <iostream>
 #include <cstdlib>
@@ -18,6 +19,7 @@
 void menu(AVLGraph<int> * tree);
 void insertPresets(AVLGraph<int> * tree);
 void test_graph();
+int gillespie(std::vector<GraphNode<int> > _graph, double _tau, double _gamma, int * initial_infected_nodes, int _max_t);
 // void insertRandom(AVLTree<int> * tree);
 
 int main()
@@ -27,6 +29,40 @@ int main()
 
     // viewer.windowListener();
 
+    // //Nodes:
+    // GraphNode<int> node0(0);
+    // GraphNode<int> node1(1);
+    // GraphNode<int> node2(2);
+    // GraphNode<int> node3(3);
+
+    // std::vector<GraphNode <int> > graph = {node0, node1, node2, node3};
+
+    // //Connections
+    // graph[0].setConnection(&node2);
+    // graph[2].setConnection(&node0);
+    // graph[1].setConnection(&node2);
+    // graph[2].setConnection(&node1);
+    // graph[1].setConnection(&node3);
+    // graph[3].setConnection(&node1);
+    // double tau = 0.3;
+    // double gamma = 0.2;
+    // int * inf = nullptr;
+    // inf = new int[1];
+    // std::cout << "sizeof inf " << sizeof inf << std::endl;
+    // for (int i = 0; i < (sizeof inf); i++)
+    // {
+    //     inf[i] = 0;
+    // }
+    
+
+
+    // gillespie(graph, tau, gamma, inf, 5);
+
+    // //freeing memory
+    // // delete [] inf;
+    // delete[] inf;
+
+    //dev purposes only
     test_graph();
     
     return 0;
@@ -102,8 +138,6 @@ void menu(AVLGraph<int> * tree)
 
 void insertPresets(AVLGraph<int> * graph)
 {
-    //int preset_data[] = {9, 23, 5, 12, 7, 40, 18, 13, 14, 15, 29, 16, 34, 1, 39};
-    // int preset_data[] = {17, 36, 45, 144, 44, 38, 178, 139, 199, 166, 70, 32, 178, 129};
     GraphNode<int> node0(0);
     GraphNode<int> node1(1);
     GraphNode<int> node2(2);
@@ -122,36 +156,36 @@ void insertPresets(AVLGraph<int> * graph)
     std::cout << std::endl;
 }
 
-void test_graph()
+//inputs: the graph, per-edge transmission rate (tau), recovery rate (gamma), initial infections (index of the nodes passed here)
+// and max number of iterations for the simulation
+int gillespie(std::vector<GraphNode<int> > _graph, double _tau, double _gamma, int * initial_infecteds, int _max_t)
 {
-    //Nodes:
-    GraphNode<int> node0(0);
-    GraphNode<int> node1(1);
-    GraphNode<int> node2(2);
-    GraphNode<int> node3(3);
-
-    std::vector<GraphNode <int> > graph = {node0, node1, node2, node3};
-
-    //Connections
-    graph[0].setConnection(&node2);
-    graph[2].setConnection(&node0);
-    graph[1].setConnection(&node2);
-    graph[2].setConnection(&node1);
-    graph[1].setConnection(&node3);
-    graph[3].setConnection(&node1);
-
-    for (int i = 0; i < graph.size(); i++)
+    std::cout << "Simulation goes here" << std::endl;
+    for (int i = 0; i < sizeof initial_infecteds; i++)
     {
-        std::cout << "Node " << graph[i].getindex() << " connected to: \n";
-        std::vector<Edge> connections = graph[i].getConnections();
-        for (int j = 0; j < connections.size(); j++)
-        {
-            std::cout << "\t- " << "Node " << connections[j].connected_to[1]->getindex() << std::endl;
-        }
-        
+        std::cout << "Infected " << i << ": " << initial_infecteds[i] << std::endl;
     }
     
+    return 0;
+}
 
-    
+void test_graph()
+{
+    GraphNode<int> node0;
+    GraphNode<int> node1;
+    GraphNode<int> node2;
+    GraphNode<int> node3;
+
+    std::vector<GraphNode<int> > nodes;
+    nodes.push_back(node0);
+    nodes.push_back(node1);
+    nodes.push_back(node2);
+    nodes.push_back(node3);
+
+    for (int i; i < node1.howMany(); i++)
+    {
+        std::cout << "Node " << i << " has index " << nodes[i].getindex() << std::endl;
+    }
+
 
 }

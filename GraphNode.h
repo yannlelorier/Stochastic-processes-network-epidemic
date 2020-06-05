@@ -3,15 +3,11 @@
 
 #include <iostream>
 #include <vector>
+#include "ObjectCounter.h"
 
-template <class T>
-class GraphNode;
-
-typedef struct Edge{
-    GraphNode<int> * connected_to[2];
-    double tau;
-    //double gamma;
-}edge_t;
+template<typename T>
+size_t 
+Counter<T>::count = 0;
 
 template <class T>
 class GraphNode {
@@ -20,10 +16,18 @@ class GraphNode {
         GraphNode<int> * self;
         int height = 1;
         bool infected;
-        std::vector<Edge> connections;
+        Counter<GraphNode> c;
+        // std::vector<Edge> connections;
     public:
-        GraphNode () {}
-        GraphNode (T _index) { index = _index; infected = false; connections = {}; }
+        // GraphNode (T _index) { index = _index; infected = false; }
+        //default constructor
+        GraphNode ()
+        {
+            index = howMany() - 1;
+            infected = false;
+        }
+        GraphNode (bool _infected)
+        { index = howMany() - 1; infected = _infected; }
         ~GraphNode () {  } //empty vector
         void setindex (T _index) { index = _index; }
         T getindex () { return index; }
@@ -31,16 +35,23 @@ class GraphNode {
         int getHeight () { return height; }
         void infect() { infected = true; }
         void recover() { infected = false; }
-        std::vector<Edge> getConnections () { return connections; }
-        void setConnection (GraphNode<int> * _node) { 
-            edge_t newEdge;
-            newEdge.connected_to[0] = self;
-            newEdge.connected_to[1] = _node;
-            newEdge.tau = 0.04;
-            connections.push_back(newEdge);
-        } //TODO check if this correct?
+        static size_t howMany() { return Counter<GraphNode<int>>::howMany(); }
+
+
+
+
+        //edges are no longer necessary?
+        // std::vector<Edge> getConnections () { return connections; }
+        // void setConnection (GraphNode<int> * _node) { 
+        //     //look for equivalent edge
+        //     //if exists, point to that one
+        //     //vector<* Edge>
+
+        //     edge_t newEdge;
+        //     newEdge.connected_to[0] = self;
+        //     newEdge.connected_to[1] = _node;
+        //     newEdge.tau = 0.04;
+        //     connections.push_back(newEdge);
+        // }
 };
-
-
-
 #endif
