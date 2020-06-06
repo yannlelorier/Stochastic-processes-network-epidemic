@@ -13,13 +13,10 @@ template <class T>
 class GraphNode {
     private:
         T index;
-        // GraphNode<int> * self;
         int height = 1;
         bool infected;
-        Counter<GraphNode> c;
-        // std::vector<Edge> connections;
+        Counter<GraphNode<int> > c;
     public:
-        // GraphNode (T _index) { index = _index; infected = false; }
         //default constructor
         GraphNode ()
         {
@@ -36,22 +33,5 @@ class GraphNode {
         void infect() { infected = true; }
         void recover() { infected = false; }
         static size_t howMany() { return Counter<GraphNode<int>>::howMany(); }
-
-
-
-
-        //edges are no longer necessary?
-        // std::vector<Edge> getConnections () { return connections; }
-        // void setConnection (GraphNode<int> * _node) { 
-        //     //look for equivalent edge
-        //     //if exists, point to that one
-        //     //vector<* Edge>
-
-        //     edge_t newEdge;
-        //     newEdge.connected_to[0] = self;
-        //     newEdge.connected_to[1] = _node;
-        //     newEdge.tau = 0.04;
-        //     connections.push_back(newEdge);
-        // }
 };
 #endif

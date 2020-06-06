@@ -180,23 +180,25 @@ void test_graph()
     GraphNode<int> node4;
 
     Edge<int> edge0 (&node0, &node2);
-    Edge<int> edge1 (&node1, &node3);
+    Edge<int> edge1 (&node0, &node3);
     Edge<int> edge2 (&node1, &node2);
     Edge<int> edge3 (&node2, &node1);
     Edge<int> edge4 (&node2, &node3);
+    Edge<int> edge5 (&node1, &node4);
     std::vector<Edge<int> * > edges;
     edges.push_back(&edge0);
     edges.push_back(&edge1);
     edges.push_back(&edge2);
     edges.push_back(&edge3);
     edges.push_back(&edge4);
+    edges.push_back(&edge5);
 
     std::cout << "Edges creation: " <<  edge0.howMany() << std::endl;
-    std::cout << "Nodes creation: " <<  edge0.howMany() << std::endl;
+    std::cout << "Nodes creation: " <<  node0.howMany() << std::endl;
 
     for (int i = 0; i < edge0.howMany(); i++){
-        std::vector<GraphNode<int> > nodes = edges[i]->getConnectedNodes();
-        std::cout << "Edge " << i << " has index " << edges[i]->getindex() <<  " and nodes " << nodes[0].getindex() << " " << nodes[1].getindex() << std::endl;
+        std::vector<GraphNode<int> * > nodes = edges[i]->getConnectedNodes();
+        std::cout << "Edge " << i << " has index " << edges[i]->getindex() <<  " and nodes " << nodes[0]->getindex() << " " << nodes[1]->getindex() << std::endl;
     }
 
 }

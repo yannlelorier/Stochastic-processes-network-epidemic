@@ -11,7 +11,7 @@ template <class T>
 class Edge{
     private:
         T index;
-        std::vector<GraphNode<int> > connected_to;
+        std::vector<GraphNode<int> * > connected_to;
         double tau;
         Counter<Edge> c;
     public: 
@@ -35,7 +35,7 @@ class Edge{
         
         //Change the infection rate for a connection
         T getindex() { return index; }
-        std::vector<GraphNode<int> > getConnectedNodes() { return connected_to; }
+        std::vector<GraphNode<int> * > getConnectedNodes() { return connected_to; }
         double getTau() { return tau; }
         void setTau(double _tau) { tau = _tau; }
 
