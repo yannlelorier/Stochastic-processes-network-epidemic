@@ -20,6 +20,7 @@
 void menu(AVLGraph<int> * tree);
 void insertPresets(AVLGraph<int> * tree);
 void test_graph();
+void edge_test();
 int gillespie(std::vector<GraphNode<int> > _graph, double _tau, double _gamma, int * initial_infected_nodes, int _max_t);
 // void insertRandom(AVLTree<int> * tree);
 
@@ -64,7 +65,7 @@ int main()
     // delete[] inf;
 
     //dev purposes only
-    // test_graph();
+    test_graph();
     
     return 0;
 }
@@ -178,39 +179,24 @@ void test_graph()
     GraphNode<int> node3;
     GraphNode<int> node4;
 
-    std::vector<GraphNode<int> * >  nodes;
-    nodes.push_back(&node0);
-    nodes.push_back(&node1);
-    nodes.push_back(&node2);
-    nodes.push_back(&node3);
-    nodes.push_back(&node4);
-    printf("%d\n", nodes[3]->getindex());
-
-    std::cout << node3.howMany() << std::endl;
-
-    for (int i = 0; i < node3.howMany(); i++){
-        printf("Node %d has index %d\n",i, nodes[i]->getindex());
-    }
-}
-
-void edge_test(){
-
-    GraphNode<int> node0;
-    GraphNode<int> node1;
-    GraphNode<int> node2;
-    GraphNode<int> node3;
-    GraphNode<int> node4;
-
-    std::vector<Edge<int> > edges;
     Edge<int> edge0 (&node0, &node2);
     Edge<int> edge1 (&node1, &node3);
     Edge<int> edge2 (&node1, &node2);
     Edge<int> edge3 (&node2, &node1);
     Edge<int> edge4 (&node2, &node3);
+    std::vector<Edge<int> * > edges;
+    edges.push_back(&edge0);
+    edges.push_back(&edge1);
+    edges.push_back(&edge2);
+    edges.push_back(&edge3);
+    edges.push_back(&edge4);
 
+    std::cout << "Edges creation: " <<  edge0.howMany() << std::endl;
+    std::cout << "Nodes creation: " <<  edge0.howMany() << std::endl;
 
-    for (int i = 0; i < node3.howMany(); i++){
-        std::vector<GraphNode<int> > nodes = edges[i].getConnectedNodes();
-        std::cout << "Edge" << i << "has index" << edges[i].getindex() <<  "and nodes " << nodes[0] << " " << nodes[1] << std::endl;
+    for (int i = 0; i < edge0.howMany(); i++){
+        std::vector<GraphNode<int> > nodes = edges[i]->getConnectedNodes();
+        std::cout << "Edge " << i << " has index " << edges[i]->getindex() <<  " and nodes " << nodes[0].getindex() << " " << nodes[1].getindex() << std::endl;
     }
+
 }

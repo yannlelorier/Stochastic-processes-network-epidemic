@@ -3,9 +3,9 @@
 
 #include "GraphNode.h"
 
-template<typename T>
-size_t
-Counter<T>::count = 0;
+// template<typename T>
+// size_t
+// Counter<T>::count = 0;
 
 template <class T>
 class Edge{
