@@ -3,6 +3,7 @@
 
 #include <iomanip>
 #include "GraphNode.h"
+#include "Edge.h"
 
 template <class T>
 class AVLGraph {

@@ -4,7 +4,10 @@ project(covid-sim)
 
 ## If you want to link SFML statically
 # set(SFML_STATIC_LIBRARIES TRUE)
+set(CMAKE_BUILD_TYPE Debug)
+
 #set(CMAKE_CXX_FLAGS "-std=c++11")
+
 
 ## In most cases better set in the CMake cache
 # set(SFML_DIR "<sfml root prefix>/lib/cmake/SFML")

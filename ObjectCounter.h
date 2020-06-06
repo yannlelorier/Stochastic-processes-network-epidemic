@@ -12,7 +12,6 @@ class Counter {
         { return count; }
     private:
         static size_t count;
-
 };
 
 #endif

@@ -12,6 +12,7 @@
 #include <ctime>
 #include "GraphViewer.h"
 #include "AVLGraph.h"
+#include "Edge.h"
 
 // Define a maximum limit for the random numbers
 #define MAX 200
@@ -63,7 +64,7 @@ int main()
     // delete[] inf;
 
     //dev purposes only
-    test_graph();
+    // test_graph();
     
     return 0;
 }
@@ -175,17 +176,41 @@ void test_graph()
     GraphNode<int> node1;
     GraphNode<int> node2;
     GraphNode<int> node3;
+    GraphNode<int> node4;
 
-    std::vector<GraphNode<int> > nodes;
-    nodes.push_back(node0);
-    nodes.push_back(node1);
-    nodes.push_back(node2);
-    nodes.push_back(node3);
+    std::vector<GraphNode<int> * >  nodes;
+    nodes.push_back(&node0);
+    nodes.push_back(&node1);
+    nodes.push_back(&node2);
+    nodes.push_back(&node3);
+    nodes.push_back(&node4);
+    printf("%d\n", nodes[3]->getindex());
 
-    for (int i; i < node1.howMany(); i++)
-    {
-        std::cout << "Node " << i << " has index " << nodes[i].getindex() << std::endl;
+    std::cout << node3.howMany() << std::endl;
+
+    for (int i = 0; i < node3.howMany(); i++){
+        printf("Node %d has index %d\n",i, nodes[i]->getindex());
     }
+}
+
+void edge_test(){
+
+    GraphNode<int> node0;
+    GraphNode<int> node1;
+    GraphNode<int> node2;
+    GraphNode<int> node3;
+    GraphNode<int> node4;
+
+    std::vector<Edge<int> > edges;
+    Edge<int> edge0 (&node0, &node2);
+    Edge<int> edge1 (&node1, &node3);
+    Edge<int> edge2 (&node1, &node2);
+    Edge<int> edge3 (&node2, &node1);
+    Edge<int> edge4 (&node2, &node3);
 
 
+    for (int i = 0; i < node3.howMany(); i++){
+        std::vector<GraphNode<int> > nodes = edges[i].getConnectedNodes();
+        std::cout << "Edge" << i << "has index" << edges[i].getindex() <<  "and nodes " << nodes[0] << " " << nodes[1] << std::endl;
+    }
 }

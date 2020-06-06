@@ -13,7 +13,7 @@ template <class T>
 class GraphNode {
     private:
         T index;
-        GraphNode<int> * self;
+        // GraphNode<int> * self;
         int height = 1;
         bool infected;
         Counter<GraphNode> c;

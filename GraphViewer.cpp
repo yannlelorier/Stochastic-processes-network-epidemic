@@ -194,6 +194,8 @@ void GraphViewer::drawGraph()
 
 }
 
+
+
 // Draw the whole tree using an in-order recursive traversal
 // sf::Vector2f GraphViewer::recursiveDrawTree(TreeNode<int> * _root, int node_y)
 // {
