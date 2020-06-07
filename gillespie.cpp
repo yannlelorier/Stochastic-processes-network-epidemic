@@ -30,10 +30,10 @@ std::vector<GraphNode<int> * > getInfected(std::vector<Edge<int> * > * graph, in
 
 int main()
 {
-    // AVLGraph<int> tree;
-    // GraphViewer viewer("Covid-19 Simulation", "JosefinSans-Regular.ttf", &menu, &tree);
+    AVLGraph<int> tree;
+    GraphViewer viewer("Covid-19 Simulation", "Font.otf", &menu, &tree);
 
-    // viewer.windowListener();
+    viewer.windowListener();
 
     //dev purposes only
     
@@ -60,13 +60,13 @@ int main()
 
     std::vector<GraphNode<int> * > infected;
 
-    infected = getInfected(&graph, 6);
+    // infected = getInfected(&graph, 6);
 
 
 
     // gillespie(&graph, 0.4, infected, 5);
 
-    // test_graph();
+    test_graph();
     
     return 0;
 }

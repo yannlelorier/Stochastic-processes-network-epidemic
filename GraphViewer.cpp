@@ -2,8 +2,7 @@
 #include <iostream>
 #include <string>
 
-GraphViewer::GraphViewer(std::string window_title, std::string font_name, void (*menu)(AVLGraph<int> *), AVLGraph<int> * graph) : window(sf::VideoMode(800, 600), window_title), menu_thread(menu, graph)
-{
+GraphViewer::GraphViewer(std::string window_title, std::string font_name, void (*menu)(AVLGraph<int> *), AVLGraph<int> * graph) : window(sf::VideoMode(800, 600), window_title), menu_thread(menu, graph){
     // change the position of the window (relatively to the desktop)
     window.setPosition(sf::Vector2i(700, 100));
 
@@ -17,18 +16,17 @@ GraphViewer::GraphViewer(std::string window_title, std::string font_name, void (
     configure();
 }
 
-void GraphViewer::configure()
-{
+void GraphViewer::configure(){
     // Configure the title object
     title.setFont(font);
     title.setCharacterSize(24);
-    title.setFillColor(sf::Color::Blue);
+    title.setFillColor(sf::Color(20,20,20));
     title.setPosition(sf::Vector2f(20, 10));
 
     // Configure the info object
     info.setFont(font);
     info.setCharacterSize(24);
-    info.setFillColor(sf::Color::Green);
+    info.setFillColor(sf::Color(100,100,100));
     info.setPosition(sf::Vector2f(20, 80));
 
     // Configure node data text
@@ -52,24 +50,18 @@ void GraphViewer::configure()
     circle.setOrigin(circle.getRadius(), circle.getRadius());
 }
 
-void GraphViewer::windowListener()
-{
+void GraphViewer::windowListener(){
     menu_thread.launch();
-
-    while(window.isOpen())
-    {
-        while(window.pollEvent(event))
-        {
-            switch(event.type)
-            {
+    while(window.isOpen()){
+        while(window.pollEvent(event)){
+            switch(event.type){
                 case sf::Event::Closed:
                     window.close();
                     std::cout << "Window closed. Exiting the program." << std::endl;
                     exit(0);
                     break;
                 case sf::Event::KeyReleased:
-                    if (event.key.code == sf::Keyboard::R)
-					{
+                    if (event.key.code == sf::Keyboard::R){
                         resetScale();
                     }
                     /*
@@ -81,29 +73,23 @@ void GraphViewer::windowListener()
                     break;
                 case sf::Event::MouseWheelMoved:
                     // The scrollwheel scales the nodes
-                    if (event.mouseWheel.delta > 0 && circle.getRadius() < 300)
-                    {
+                    if (event.mouseWheel.delta > 0 && circle.getRadius() < 300){
                         // Increment the scale
                         changeScale(1);
-                    }
-                    else if (event.mouseWheel.delta < 0 && circle.getRadius() > 0.5)
-                    {
+                    } else if (event.mouseWheel.delta < 0 && circle.getRadius() > 0.5){
                         // Decrement the scale
                         changeScale(-1);
                     }
                     break;
                 default:
-                    // Do nothing with the events that are not yet handled
                     ;
             }
         }
-
         mainDraw();
     }
 }
 
-void GraphViewer::resetScale()
-{
+void GraphViewer::resetScale(){
     // Reset the size of the node circles
     circle.setRadius(node_radius);
     circle.setOrigin(circle.getRadius(), circle.getRadius());
@@ -118,8 +104,7 @@ void GraphViewer::resetScale()
     height.setCharacterSize(height_font_size);
 }
 
-void GraphViewer::changeScale(int multiplier)
-{
+void GraphViewer::changeScale(int multiplier){
     // Change the radius of the node circles
     int radius = circle.getRadius();
     radius += scale_factor * multiplier;
@@ -137,8 +122,7 @@ void GraphViewer::changeScale(int multiplier)
     height.setCharacterSize(height_font_size);
 }
 
-void GraphViewer::mainDraw()
-{
+void GraphViewer::mainDraw(){
     // Keep track of the time elapsed since the last frame
     elapsed_time = clock.restart();
     total_time += elapsed_time;
@@ -154,8 +138,7 @@ void GraphViewer::mainDraw()
     window.display();
 }
 
-void GraphViewer::drawTitle()
-{
+void GraphViewer::drawTitle(){
     std::string radius_text;
     // Get the radius as a string
     radius_text = std::to_string(circle.getRadius());
@@ -170,32 +153,19 @@ void GraphViewer::drawTitle()
     window.draw(info);
 }
 
-/*
-void GraphViewer::drawAnimatedCircle()
-{
-    // Create a moving animation
-    circle.setPosition(sf::Vector2f(x_pos, y_pos));
-    x_pos += speed * direction * elapsed_time.asSeconds();
-    if (x_pos <= circle.getRadius() || x_pos >= window.getSize().x-circle.getRadius())
-    {
-        direction = direction * -1;
-    }
-
-    window.draw(circle);
-}
-*/
-
-void GraphViewer::drawGraph()
-{
+void GraphViewer::drawGraph(){
     // Initialize the margin to the left
     global_node_x = 100;
     global_node_y = 200;
+    GraphNode<int> node_test;
     // recursiveDrawTree(tree_pointer->getRoot(), global_node_y);
+    // printf("Nodes: %ld\n",node_test.howMany());
 
 }
 
 //TODO draw the graph in a circle
 
+// Count the number of nodes, divide the area by doing 360/n and then allocate the nodes with increases and decreases on the perimeter steps
 
 // Draw the whole tree using an in-order recursive traversal
 // sf::Vector2f GraphViewer::recursiveDrawTree(TreeNode<int> * _root, int node_y)
@@ -243,8 +213,7 @@ void GraphViewer::drawGraph()
 //     return sf::Vector2f(0, 0);
 // }
 
-void GraphViewer::drawNode(GraphNode<int> * node, const sf::Vector2f & position)
-{
+void GraphViewer::drawNode(GraphNode<int> * node, const sf::Vector2f & position){
     // // Set the position of the circle
     // circle.setPosition(position);
     // // Set different colors for leaf or inner nodes
@@ -277,8 +246,7 @@ void GraphViewer::drawNode(GraphNode<int> * node, const sf::Vector2f & position)
 
 // Draw the lines between the nodes.
 // Receives the coordinates of the two nodes to link
-void GraphViewer::drawLine(const sf::Vector2f & origin, const sf::Vector2f & destination)
-{
+void GraphViewer::drawLine(const sf::Vector2f & origin, const sf::Vector2f & destination){
     // Create new points
     sf::Vector2f o1, o2, o3, d1, d2, d3;
     // Copy the origin and destination points
@@ -290,8 +258,7 @@ void GraphViewer::drawLine(const sf::Vector2f & origin, const sf::Vector2f & des
     d1.x -= 1;
     d3.x += 1;
     // Define a series of 6 vertices
-    sf::Vertex line[] =
-    {
+    sf::Vertex line[] = {
         sf::Vertex(o1, sf::Color::Black),
         sf::Vertex(d1, sf::Color::Black),
         sf::Vertex(o2, sf::Color::Black),

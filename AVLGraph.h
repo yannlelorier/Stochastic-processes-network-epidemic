@@ -36,3 +36,6 @@ void AVLGraph<T>::insert(GraphNode<T> * _node)
 }
 
 #endif
+
+
+   
