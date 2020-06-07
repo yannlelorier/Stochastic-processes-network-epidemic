@@ -194,6 +194,7 @@ void GraphViewer::drawGraph()
 
 }
 
+//TODO draw the graph in a circle
 
 
 // Draw the whole tree using an in-order recursive traversal

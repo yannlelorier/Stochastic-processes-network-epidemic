@@ -14,4 +14,8 @@ class Counter {
         static size_t count;
 };
 
+template<typename T>
+size_t 
+Counter<T>::count = 0;
+
 #endif

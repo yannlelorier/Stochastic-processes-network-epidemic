@@ -5,10 +5,6 @@
 #include <vector>
 #include "ObjectCounter.h"
 
-template<typename T>
-size_t 
-Counter<T>::count = 0;
-
 template <class T>
 class GraphNode {
     private:
@@ -30,6 +26,7 @@ class GraphNode {
         T getindex () { return index; }
         void setHeight (int _height) { height = _height; }
         int getHeight () { return height; }
+        bool isInfected() { return infected; }
         void infect() { infected = true; }
         void recover() { infected = false; }
         static size_t howMany() { return Counter<GraphNode<int>>::howMany(); }
