@@ -11,6 +11,8 @@ class GraphNode {
         T index;
         int height = 1;
         bool infected;
+        double tau;
+        int infectedNeighbors;
         Counter<GraphNode<int> > c;
     public:
         //default constructor
@@ -18,6 +20,8 @@ class GraphNode {
         {
             index = howMany() - 1;
             infected = false;
+            infectedNeighbors = 0;
+            tau = 0.4;
         }
         GraphNode (bool _infected)
         { index = howMany() - 1; infected = _infected; }
@@ -26,7 +30,11 @@ class GraphNode {
         T getindex () { return index; }
         void setHeight (int _height) { height = _height; }
         int getHeight () { return height; }
+        double getTau() { return tau; }
+        void setTau(double _tau) { tau = _tau; }
         bool isInfected() { return infected; }
+        void neighborInfected() { infectedNeighbors++; }
+        int getInfectedNeigh() {return infectedNeighbors;}
         void infect() { infected = true; }
         void recover() { infected = false; }
         static size_t howMany() { return Counter<GraphNode<int>>::howMany(); }

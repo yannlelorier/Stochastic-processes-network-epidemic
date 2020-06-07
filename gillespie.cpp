@@ -10,7 +10,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
-#include <algorithm>
+#include <random>
 #include "GraphViewer.h"
 #include "AVLGraph.h"
 #include "Edge.h"
@@ -22,9 +22,9 @@ void menu(AVLGraph<int> * tree);
 void insertPresets(AVLGraph<int> * tree);
 void test_graph();
 void edge_test();
-int gillespie(std::vector<GraphNode<int> > _graph, double _gamma, int * initial_infected_nodes, int _max_t);
-std::vector<GraphNode<int> * > getAtRisk(std::vector<Edge<int> * > * graph, int graphSize);
-std::vector<GraphNode<int> * > getInfected(std::vector<Edge<int> * > * graph, int graphSize);
+int gillespie(std::vector<Edge<int> * > * _graph, double tau ,double _gamma, int _max_t, int graphSize);
+std::vector<GraphNode<int> * > getAtRisk(std::vector<Edge<int> * > * graph);
+std::vector<GraphNode<int> * > getInfected(std::vector<Edge<int> * > * graph);
 // void setRandomInfected(std::vector<Edge<int> * > * graph, std::vector<GraphNode<int> * > * infected);
 // void insertRandom(AVLTree<int> * tree);
 
@@ -44,6 +44,7 @@ int main()
     GraphNode<int> node3;
     GraphNode<int> node4;
     GraphNode<int> node5;
+    GraphNode<int> node6;
 
     //initial infections
     node0.infect();
@@ -56,15 +57,12 @@ int main()
     Edge<int> edge2 (&node4, &node2);
     Edge<int> edge3 (&node2, &node5);
     Edge<int> edge4 (&node2, &node3);
-    std::vector<Edge<int> * > graph = {&edge0, &edge1, &edge2, &edge3, &edge4};
+    Edge<int> edge5 (&node6, &node5);
+    std::vector<Edge<int> * > graph = {&edge0, &edge1, &edge2, &edge3, &edge4, &edge5};
 
-    std::vector<GraphNode<int> * > infected;
-
-    infected = getInfected(&graph, 6);
-
-
-
-    // gillespie(&graph, 0.4, infected, 5);
+    
+    
+    gillespie(&graph, 0.3, 0.4, 5, 7);
 
     // test_graph();
     
@@ -161,49 +159,113 @@ void insertPresets(AVLGraph<int> * graph)
 
 //inputs: the graph, recovery rate (gamma), initial infections (pointers to the nodes passed here)
 // and max number of iterations for the simulation
-int gillespie(std::vector<Edge<int> * > * graph, double gamma, std::vector<GraphNode<int> * > * infectedNodes, int maxt, int graphSize)
+int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int maxt, int graphSize)
 {
-    int susc = graphSize - infectedNodes->size(); //susceptible population
-    int infe = infectedNodes->size(); //infected population
+
+    std::vector<GraphNode<int> * > infectedNodes;
+
+    infectedNodes = getInfected(graph);
+
+    std::cout << "Infected Nodes:" << std::endl;
+
+    for (int i = 0; i < infectedNodes.size(); i++)
+    {
+        std::cout << "\tNode " << infectedNodes[i]->getindex() << std::endl;
+    }
+
+    int susc = graphSize - infectedNodes.size(); //susceptible population
+    int infe = infectedNodes.size(); //infected population
     int reco = 0; //recovered population, assuming that at the beginning of the algorithm no people have been recovered.
+    double totalInfectionRate = 0;
+    double totalRecoveryRate = 0;
+    double totalRate = 0;
+    double time;
 
-    int iteration = 0; //actual iteration of the algorithm
+    std::exponential_distribution<double> expDist (3.5); //exponential distribution
 
-    std::vector<GraphNode<int> * > at_risk = getAtRisk(graph, graphSize);
+    // std::cout << "In iteration " << iteration << std::endl;
+
+    std::vector<GraphNode<int> * > at_risk = getAtRisk(graph);
+
+    std::cout << "At risk nodes:" << std::endl;
+    for (int i = 0; i < at_risk.size(); i++)
+    {
+        std::cout << "Node" << at_risk[i]->getindex();
+        std::cout << " | Changing tau" << std::endl;
+        at_risk[i]->setTau(tau*at_risk[i]->getInfectedNeigh());
+        totalInfectionRate += at_risk[i]->getTau();
+    }
+    totalRecoveryRate = gamma * infectedNodes.size();
+    totalRate = totalInfectionRate + totalRecoveryRate;
+
+    time = expDist(totalRate); //applying total distribution
+
+    while (time < maxt && totalRate > 0)
+    {
+        //taken from  https://en.cppreference.com/w/cpp/numeric/random/uniform_real_distribution
+        std::random_device rd;  //Will be used to obtain a seed for the random number engine
+        std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+        std::uniform_real_distribution<> realDis(0, totalRate);
+        std::uniform_int_distribution<> intDis(0, infectedNodes.size());
+
+        double r = realDis(gen);
+        int randIndex = intDis(gen);
+        int randomIndex;
+        if (r < totalRecoveryRate)
+        {
+            infectedNodes[randomIndex]->recover();
+            //TODO reduce infection rate for the neighbors
+            // infectedNodes[randomIndex]->
+            infectedNodes.erase(infectedNodes.begin() + randomIndex);
+            //or
+            //infectedNodes = getInfected(graph); TODO check if it is correct
+
+        }
+    }
 
 
     return 0;
 }
 
 
-std::vector<GraphNode<int> * >  getAtRisk(std::vector<Edge<int> * > * graph, int graphSize)
+std::vector<GraphNode<int> * >  getAtRisk(std::vector<Edge<int> * > * graph)
 {
     std::vector<GraphNode<int> * > at_risk;
 
-    for (int i = 0; i < graphSize; i++)
+    for (int i = 0; i < graph->size(); i++)
     {
         std::vector<GraphNode<int> * > nodes = (*graph)[i]->getConnectedNodes();
         if (nodes[0]->isInfected() && std::find(at_risk.begin(), at_risk.end(), nodes[1])==at_risk.end())
+        {
             at_risk.push_back(nodes[1]);
+            nodes[1]->neighborInfected();
+        }
         else if (nodes[1]->isInfected() && std::find(at_risk.begin(), at_risk.end(), nodes[0])==at_risk.end())
+        {    
             at_risk.push_back(nodes[0]);
+            nodes[0]->neighborInfected();
+        }
+        nodes.clear();
     }
 
     return at_risk;
     
 }
 
-std::vector<GraphNode<int> * > getInfected(std::vector<Edge<int> * > * graph, int graphSize)
+std::vector<GraphNode<int> * > getInfected(std::vector<Edge<int> * > * graph)
 {
     std::vector<GraphNode<int> * >  infected;
 
-    for (int i = 0; i < graphSize; i++)
+    std::cout << "Total edges: " << (*graph)[0]->howMany() << std::endl;
+
+    for (int i = 0; i < graph->size(); i++)
     {
         std::vector<GraphNode<int> * > nodes = (*graph)[i]->getConnectedNodes();
         if (nodes[0]->isInfected() && std::find(infected.begin(), infected.end(), nodes[0])==infected.end())
             infected.push_back(nodes[0]);
         else if (nodes[1]->isInfected() && std::find(infected.begin(), infected.end(), nodes[1])==infected.end())
             infected.push_back(nodes[1]);
+        nodes.clear();
     }
 
     return infected;
@@ -234,7 +296,7 @@ void test_graph()
     std::cout << "Edges creation: " <<  edge0.howMany() << std::endl;
     std::cout << "Nodes creation: " <<  node0.howMany() << std::endl;
 
-    for (int i = 0; i < edge0.howMany(); i++){
+    for (int i = 0; i < edge0.howMany()-1; i++){
         std::vector<GraphNode<int> * > nodes = edges[i]->getConnectedNodes();
         std::cout << "Edge " << i << " has index " << edges[i]->getindex() <<  " and nodes " << nodes[0]->getindex() << " " << nodes[1]->getindex() << std::endl;
     }
