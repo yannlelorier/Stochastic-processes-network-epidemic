@@ -193,12 +193,10 @@ std::vector<GraphNode<int> * >  getAtRisk(std::vector<Edge<int> * > * graph, int
     
 }
 
-std::vector<GraphNode<int> * > getInfected(std::vector<Edge<int> * > * graph, int graphSize)
-{
+std::vector<GraphNode<int> * > getInfected(std::vector<Edge<int> * > * graph, int graphSize) {
     std::vector<GraphNode<int> * >  infected;
 
-    for (int i = 0; i < graphSize; i++)
-    {
+    for (int i = 0; i < graphSize; i++) {
         std::vector<GraphNode<int> * > nodes = (*graph)[i]->getConnectedNodes();
         if (nodes[0]->isInfected() && std::find(infected.begin(), infected.end(), nodes[0])==infected.end())
             infected.push_back(nodes[0]);
