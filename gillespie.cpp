@@ -63,7 +63,7 @@ int main()
 
     
     
-    gillespie(&graph, 0.3, 0.4, 5, 7);
+    gillespie(&graph, 0.3, 0.4, 7, 7);
 
     // test_graph();
     
@@ -216,27 +216,26 @@ int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int m
 
         double r = realDis(gen);
         int randIndex = intDis(genInt);
-        int randomIndex;
         if (r < totalRecoveryRate)
         {
-            std::cout << "Node " << infectedNodes[randomIndex]->getindex() << " has recovered" << std::endl;
-            infectedNodes[randomIndex]->recover();
+            std::cout << "Node " << infectedNodes[randIndex]->getindex() << " has recovered" << std::endl;
+            infectedNodes[randIndex]->recover();
 
             for (int i = 0; i < graph->size(); i++)
             {
                 std::vector<GraphNode<int> * > nodes = (*graph)[i]->getConnectedNodes();
-                if (nodes[0]==infectedNodes[randomIndex])
+                if (nodes[0]==infectedNodes[randIndex])
                 {
                     nodes[1]->setTau(nodes[1]->getTau()-tau);
                 }
-                else if (nodes[1]==infectedNodes[randomIndex])
+                else if (nodes[1]==infectedNodes[randIndex])
                 {    
                     nodes[0]->setTau(nodes[1]->getTau()-tau);
                 }
                 nodes.clear();
             }
             
-            infectedNodes.erase(infectedNodes.begin() + randomIndex);
+            infectedNodes.erase(infectedNodes.begin() + randIndex);
             reco++;
             //or
             infectedNodes = getInfected(graph); //is this redundant?
@@ -247,10 +246,11 @@ int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int m
             //leaving it as uniform distribution for testing (for now)
             std::uniform_int_distribution<> atRiskDis(0, at_risk.size());
             randIndex = atRiskDis(genInt);
+            std::cout << "randIndex: " << randIndex << std::endl;
             std::cout << "Node " << at_risk[randIndex]->getindex() << " was infected" << std::endl;
             at_risk[randIndex]->infect();
             infe++;
-            at_risk.erase(at_risk.begin() + randomIndex);
+            // at_risk.erase(at_risk.begin() + randomIndex);
             infectedNodes = getInfected(graph);
             at_risk = getAtRisk(graph);
 
