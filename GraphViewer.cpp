@@ -159,8 +159,7 @@ void GraphViewer::drawTitle(){
     radius_text = std::to_string(circle.getRadius());
     radius_text = radius_text.substr(0, radius_text.length()-5);
     title.setString("Graph Viewer\nTime elapsed: " + std::to_string(total_time.asSeconds()));
-    info.setString( "Radius: " + radius_text +
-                    "\nFont size: " + std::to_string(node_font_size));
+    info.setString( "Radius: " + radius_text +"\nFont size: " + std::to_string(node_font_size));
 
     window.draw(title);
     window.draw(info);
@@ -168,7 +167,8 @@ void GraphViewer::drawTitle(){
 
 
 void GraphViewer::drawGraph(){
-
+//TODO Ddraw node ()iterative
+    //draw graph connections
 }
 
 
