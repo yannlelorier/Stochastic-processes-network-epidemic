@@ -37,7 +37,6 @@ class GraphViewer {
         void configure();
         void mainDraw();
         void drawTitle();
-        void drawAnimatedCircle();
 
         // Methods for drawing the tree
         void resetScale();

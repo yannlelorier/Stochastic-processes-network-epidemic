@@ -23,7 +23,7 @@
 void menu(AVLGraph<int> * tree);
 void insertPresets(AVLGraph<int> * tree);
 void test_graph();
-void nodeCoordinates(double xCenter, double yCenter, double radius, int steps, double &x, double &y);
+void nodeCoordinates(double xCenter, double yCenter, double radius, int steps, std::vector<GraphNode<int> * > * graph);
 void edge_test();
 int gillespie(std::vector<Edge<int> * > * _graph, double tau ,double _gamma, int _max_t, int graphSize); //NOTE graphSize
 std::vector<GraphNode<int> * > getAtRisk(std::vector<Edge<int> * > * graph);
@@ -34,43 +34,40 @@ std::vector<GraphNode<int> * > getInfected(std::vector<Edge<int> * > * graph);
 int main()
 {
     // AVLGraph<int> tree;
-    // GraphViewer viewer("Covid-19 Simulation", "JosefinSans-Regular.ttf", &menu, &tree);
+    // GraphViewer viewer("Covid-19 Simulation", "Font.otf", &menu, &tree);
 
     // viewer.windowListener();
 
     //dev purposes only
-	double x,y;
-	x = y = 0;
-    nodeCoordinates(0,0,50,8,x,y);
 	
     //setting nodes
-    GraphNode<int> node0;
-    GraphNode<int> node1;
-    GraphNode<int> node2;
-    GraphNode<int> node3;
-    GraphNode<int> node4;
-    GraphNode<int> node5;
-    GraphNode<int> node6;
+    // GraphNode<int> node0;
+    // GraphNode<int> node1;
+    // GraphNode<int> node2;
+    // GraphNode<int> node3;
+    // GraphNode<int> node4;
+    // GraphNode<int> node5;
+    // GraphNode<int> node6;
 
-    //initial infections
-    node0.infect();
-    node2.infect();
+    // //initial infections
+    // node0.infect();
+    // node2.infect();
 
-    //setting connections
+    // //setting connections
 
-    Edge<int> edge0 (&node0, &node1);
-    Edge<int> edge1 (&node1, &node4);
-    Edge<int> edge2 (&node4, &node2);
-    Edge<int> edge3 (&node2, &node5);
-    Edge<int> edge4 (&node2, &node3);
-    Edge<int> edge5 (&node6, &node5);
-    std::vector<Edge<int> * > graph = {&edge0, &edge1, &edge2, &edge3, &edge4, &edge5};
+    // Edge<int> edge0 (&node0, &node1);
+    // Edge<int> edge1 (&node1, &node4);
+    // Edge<int> edge2 (&node4, &node2);
+    // Edge<int> edge3 (&node2, &node5);
+    // Edge<int> edge4 (&node2, &node3);
+    // Edge<int> edge5 (&node6, &node5);
+    // std::vector<Edge<int> * > graph = {&edge0, &edge1, &edge2, &edge3, &edge4, &edge5};
 
     
     
-    gillespie(&graph, 0.3, 0.4, 7, 7);
+    // gillespie(&graph, 0.3, 0.4, 7, 7);
 
-    // test_graph();
+    test_graph();
     
     return 0;
 }
@@ -85,7 +82,6 @@ void menu(AVLGraph<int> * tree)
     while (ans != 'q')
     {
         std::cout << "\n== SIR Epidemic - Gillespie Algorithm ==\n";
-        std::cout << "\tf. Fill the graph with preset data\n";
         std::cout << "\ts. Slow the simulation\n"; //TODO slow simulation
         std::cout << "\tc. Clear the tree\n";
         std::cout << "\tp. Pause the simulation\n"; //TODO pause simulation
@@ -96,9 +92,6 @@ void menu(AVLGraph<int> * tree)
 
         switch (ans)
         {
-            case 'f':
-                insertPresets(tree);
-                break;
             case 's':
                 std::cout << "Slowing the simulation down...\n ";
                 break;
@@ -142,26 +135,6 @@ void menu(AVLGraph<int> * tree)
 //     }
 //     std::cout << std::endl;
 // }
-
-void insertPresets(AVLGraph<int> * graph)
-{
-    GraphNode<int> node0;
-    GraphNode<int> node1;
-    GraphNode<int> node2;
-    GraphNode<int> node3;
-    
-    std::vector<GraphNode<int> > preset_graph = {&node0, &node1, &node2, &node3};
-    int preset_size = preset_graph.size();
-    // int preset_size = sizeof preset_data / sizeof preset_data[0];
-
-    std::cout << "\tInserting: ";
-    for (int i=0; i<preset_size; i++)
-    {
-        std::cout << preset_graph[i].getindex() << ", ";
-        graph->insert(&preset_graph[i]);
-    }
-    std::cout << std::endl;
-}
 
 //inputs: the graph, recovery rate (gamma), initial infections (pointers to the nodes passed here)
 // and max number of iterations for the simulation
@@ -326,6 +299,14 @@ void test_graph()
     GraphNode<int> node3;
     GraphNode<int> node4;
 
+    int steps = node0.howMany();
+
+    std::vector<GraphNode<int> * > graph = {&node0, &node1, &node2, &node3, &node4};   
+    
+    nodeCoordinates(0,0,50,steps, &graph);
+
+    /*
+    // node1 {n0}{n1}{n2}
     Edge<int> edge0 (&node0, &node2);
     Edge<int> edge1 (&node0, &node3);
     Edge<int> edge2 (&node1, &node2);
@@ -340,6 +321,7 @@ void test_graph()
     edges.push_back(&edge4);
     edges.push_back(&edge5);
 
+
     std::cout << "Edges creation: " <<  edge0.howMany() << std::endl;
     std::cout << "Nodes creation: " <<  node0.howMany() << std::endl;
 
@@ -347,18 +329,27 @@ void test_graph()
         std::vector<GraphNode<int> * > nodes = edges[i]->getConnectedNodes();
         std::cout << "Edge " << i << " has index " << edges[i]->getindex() <<  " and nodes " << nodes[0]->getindex() << " " << nodes[1]->getindex() << std::endl;
     }
+    */
 
 }
 
 // To change the radius, xCenter and yCenter variables, modify the values in the config.txt file
-void nodeCoordinates(double xCenter, double yCenter, double radius, int steps, double &x, double &y){ 
+void nodeCoordinates(double xCenter, double yCenter, double radius, int steps, std::vector<GraphNode<int> * > * graph){ 
 	static double PI = 4*atan(1);
 	double change = (2*PI)/steps;
 	double circleCounter = change;
+    double x,y;
+    std::vector<GraphNode<int> * > connections;
+    sf::Vector2f pos;
+    steps = 0;
+    x = y = 0;
 
 	for(circleCounter; circleCounter <= 2*PI; circleCounter += change){
-		x = xCenter + (radius * (cos(circleCounter)));
+        x = xCenter + (radius * (cos(circleCounter)));
 		y = yCenter + (radius * (sin(circleCounter)));
-		std::cout << std::fixed << std::setprecision(20) << "X = " << x << "\nY = " << y << "\n" << std::endl;
+        pos = sf::Vector2f(x,y);
+        (*graph)[steps]->setPos(pos);
+        std::cout << std::fixed << std::setprecision(20) << "Node " << steps <<  "\tX = " <<  pos.x << "\nY = " << pos.y << "\n" << std::endl;
+        steps ++;
 	}
-} 
+}

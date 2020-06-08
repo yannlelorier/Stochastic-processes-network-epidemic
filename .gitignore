@@ -21,7 +21,11 @@
 #vscode config
 .vscode/
 
-#cmake build
-build/
+covid-sim
+Makefile
+CMakeFiles
+CMakeCache.txt
+*.cmake
+
 
 gillespie

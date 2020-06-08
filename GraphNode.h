@@ -13,6 +13,7 @@ class GraphNode {
         bool infected;
         double tau;
         int infectedNeighbors;
+        sf::Vector2f pos;
         Counter<GraphNode<int> > c;
     public:
         //default constructor
@@ -22,6 +23,7 @@ class GraphNode {
             infected = false;
             infectedNeighbors = 0;
             tau = 0.4;
+            pos = sf::Vector2f (0,0);
         }
         GraphNode (bool _infected)
         { index = howMany() - 1; infected = _infected; }
@@ -35,6 +37,8 @@ class GraphNode {
         bool isInfected() { return infected; }
         void neighborInfected() { infectedNeighbors++; }
         int getInfectedNeigh() {return infectedNeighbors;}
+        void setPos(sf::Vector2f _pos) { pos = _pos; }
+        sf::Vector2f getPos () {return pos;}
         void infect() { infected = true; }
         void recover() { infected = false; }
         static size_t howMany() { return Counter<GraphNode<int>>::howMany(); }
