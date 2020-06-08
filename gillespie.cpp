@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <chrono>
 #include <ctime>
 #include <random>
 #include "GraphViewer.h"
@@ -22,7 +23,7 @@ void menu(AVLGraph<int> * tree);
 void insertPresets(AVLGraph<int> * tree);
 void test_graph();
 void edge_test();
-int gillespie(std::vector<Edge<int> * > * _graph, double tau ,double _gamma, int _max_t, int graphSize);
+int gillespie(std::vector<Edge<int> * > * _graph, double tau ,double _gamma, int _max_t, int graphSize); //NOTE graphSize
 std::vector<GraphNode<int> * > getAtRisk(std::vector<Edge<int> * > * graph);
 std::vector<GraphNode<int> * > getInfected(std::vector<Edge<int> * > * graph);
 // void setRandomInfected(std::vector<Edge<int> * > * graph, std::vector<GraphNode<int> * > * infected);
@@ -181,7 +182,6 @@ int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int m
     double totalRate = 0;
     double time;
 
-    std::exponential_distribution<double> expDist (3.5); //exponential distribution
 
     // std::cout << "In iteration " << iteration << std::endl;
 
@@ -197,33 +197,75 @@ int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int m
     }
     totalRecoveryRate = gamma * infectedNodes.size();
     totalRate = totalInfectionRate + totalRecoveryRate;
+    
+    int seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::default_random_engine generator (seed);
 
-    time = expDist(totalRate); //applying total distribution
+    std::exponential_distribution<double> expDist (totalRate); //exponential distribution
+
+    time = expDist(generator); //applying exponential distribution
 
     while (time < maxt && totalRate > 0)
     {
         //taken from  https://en.cppreference.com/w/cpp/numeric/random/uniform_real_distribution
         std::random_device rd;  //Will be used to obtain a seed for the random number engine
         std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
-        std::uniform_real_distribution<> realDis(0, totalRate);
-        std::uniform_int_distribution<> intDis(0, infectedNodes.size());
+        std::default_random_engine genInt;
+        std::uniform_real_distribution<double> realDis(0, totalRate);
+        std::uniform_int_distribution<int> intDis(0, infectedNodes.size());
 
         double r = realDis(gen);
-        int randIndex = intDis(gen);
+        int randIndex = intDis(genInt);
         int randomIndex;
         if (r < totalRecoveryRate)
         {
+            std::cout << "Node " << infectedNodes[randomIndex]->getindex() << " has recovered" << std::endl;
             infectedNodes[randomIndex]->recover();
-            //TODO reduce infection rate for the neighbors
-            // infectedNodes[randomIndex]->
+
+            for (int i = 0; i < graph->size(); i++)
+            {
+                std::vector<GraphNode<int> * > nodes = (*graph)[i]->getConnectedNodes();
+                if (nodes[0]==infectedNodes[randomIndex])
+                {
+                    nodes[1]->setTau(nodes[1]->getTau()-tau);
+                }
+                else if (nodes[1]==infectedNodes[randomIndex])
+                {    
+                    nodes[0]->setTau(nodes[1]->getTau()-tau);
+                }
+                nodes.clear();
+            }
+            
             infectedNodes.erase(infectedNodes.begin() + randomIndex);
+            reco++;
             //or
-            //infectedNodes = getInfected(graph); TODO check if it is correct
+            infectedNodes = getInfected(graph); //is this redundant?
+
+        }else
+        {
+            //TODO extract a node from at_risk with prob=at_risk[i]/totalInfectionRate
+            //leaving it as uniform distribution for testing (for now)
+            std::uniform_int_distribution<> atRiskDis(0, at_risk.size());
+            randIndex = atRiskDis(genInt);
+            std::cout << "Node " << at_risk[randIndex]->getindex() << " was infected" << std::endl;
+            at_risk[randIndex]->infect();
+            infe++;
+            at_risk.erase(at_risk.begin() + randomIndex);
+            infectedNodes = getInfected(graph);
+            at_risk = getAtRisk(graph);
 
         }
+        susc = at_risk.size();
+        for (int i = 0; i < at_risk.size(); i++)
+        {
+            totalInfectionRate += at_risk[i]->getTau();
+        }
+        
+        totalRecoveryRate = gamma * infectedNodes.size();
+        totalRate = totalInfectionRate + totalRecoveryRate;
+        std::exponential_distribution<double> expDist (totalRate);
+        time = expDist(generator);
     }
-
-
     return 0;
 }
 
