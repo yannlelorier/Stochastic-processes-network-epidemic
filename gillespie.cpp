@@ -11,6 +11,7 @@
 #include <cstdlib>
 #include <chrono>
 #include <ctime>
+#include <math.h>
 #include <random>
 #include "GraphViewer.h"
 #include "AVLGraph.h"
@@ -22,6 +23,7 @@
 void menu(AVLGraph<int> * tree);
 void insertPresets(AVLGraph<int> * tree);
 void test_graph();
+void nodeCoordinates(double xCenter, double yCenter, double radius, int steps, double &x, double &y);
 void edge_test();
 int gillespie(std::vector<Edge<int> * > * _graph, double tau ,double _gamma, int _max_t, int graphSize); //NOTE graphSize
 std::vector<GraphNode<int> * > getAtRisk(std::vector<Edge<int> * > * graph);
@@ -37,7 +39,10 @@ int main()
     // viewer.windowListener();
 
     //dev purposes only
-    
+	double x,y;
+	x = y = 0;
+    nodeCoordinates(0,0,50,8,x,y);
+	
     //setting nodes
     GraphNode<int> node0;
     GraphNode<int> node1;
@@ -344,3 +349,16 @@ void test_graph()
     }
 
 }
+
+// To change the radius, xCenter and yCenter variables, modify the values in the config.txt file
+void nodeCoordinates(double xCenter, double yCenter, double radius, int steps, double &x, double &y){ 
+	static double PI = 4*atan(1);
+	double change = (2*PI)/steps;
+	double circleCounter = change;
+
+	for(circleCounter; circleCounter <= 2*PI; circleCounter += change){
+		x = xCenter + (radius * (cos(circleCounter)));
+		y = yCenter + (radius * (sin(circleCounter)));
+		std::cout << std::fixed << std::setprecision(20) << "X = " << x << "\nY = " << y << "\n" << std::endl;
+	}
+} 
