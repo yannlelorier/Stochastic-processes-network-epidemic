@@ -105,7 +105,9 @@ void menu(AVLGraph<int> * tree){
         switch (ans){
             case 'r':
                 std::cout << "Running...\n ";
+                gillespie(graph_ptr, 0.3, 0.40, 20, (*graph_ptr)[0]->howMany(),sleepSize);
                 // gillespieThread.join(); 
+
                 break;
             case 's':
                 std::cout << "Slowing the simulation down...\n ";
