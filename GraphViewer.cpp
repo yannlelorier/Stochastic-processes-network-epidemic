@@ -20,19 +20,19 @@ void GraphViewer::configure(){
     // Configure the title object
     title.setFont(font);
     title.setCharacterSize(24);
-    title.setFillColor(sf::Color::Blue);
+    title.setFillColor(sf::Color(200,200,200));
     title.setPosition(sf::Vector2f(20, 10));
 
     // Configure the info object
     info.setFont(font);
     info.setCharacterSize(24);
-    info.setFillColor(sf::Color::Green);
+    info.setFillColor(sf::Color(150,150,150));
     info.setPosition(sf::Vector2f(20, 80));
 
     // Configure node data text
     data.setFont(font);
     data.setCharacterSize(node_font_size);
-    data.setFillColor(sf::Color::Black);
+    data.setFillColor(sf::Color::White);
     data.setStyle(sf::Text::Bold | sf::Text::Underlined);
 
     // Configure height text
@@ -44,9 +44,9 @@ void GraphViewer::configure(){
     // Create a circle with a visible edge
     circle.setRadius(node_radius);
     circle.setPointCount(32);
-    circle.setFillColor(sf::Color::Red);
-    circle.setOutlineThickness(3.f);
-    circle.setOutlineColor(sf::Color::Black);
+    circle.setFillColor(sf::Color(255, 154, 162));
+    circle.setOutlineThickness(1.f);
+    circle.setOutlineColor(sf::Color::White);
     circle.setOrigin(circle.getRadius(), circle.getRadius());
 }
 
@@ -132,7 +132,7 @@ void GraphViewer::mainDraw()
     elapsed_time = clock.restart();
     total_time += elapsed_time;
     // Clean the window
-    window.clear(sf::Color::White);
+    window.clear(sf::Color(74, 78, 77));
 
     // Draw all the elements
     drawTitle();
@@ -183,9 +183,9 @@ void GraphViewer::drawNode(GraphNode<int> * node, const sf::Vector2f & position)
 
     //color based on the infected
     if (node->isInfected())
-        circle.setFillColor(sf::Color(255,0,0));
+        circle.setFillColor(sf::Color(254, 138, 113));
     else
-        circle.setFillColor(sf::Color(0,0,255));
+        circle.setFillColor(sf::Color(61, 164, 171));
     window.draw(circle);
 
     // Set the text of the node
@@ -196,17 +196,6 @@ void GraphViewer::drawNode(GraphNode<int> * node, const sf::Vector2f & position)
     data.setOrigin(textRect.left + textRect.width/2.0f, textRect.top  + textRect.height/2.0f);
     data.setPosition(position);
     window.draw(data);
-
-    // Set a new position for the height text
-    sf::Vector2f position_offset(circle.getRadius(), circle.getRadius());
-    // Set the height of the node
-    height.setString(std::to_string(node->getHeight()));
-    // Center the origin of the text
-    textRect = height.getLocalBounds();
-    // Set the position of the text
-    height.setOrigin(textRect.left + textRect.width/2.0f, textRect.top  + textRect.height/2.0f);
-    height.setPosition(position + position_offset);
-    window.draw(height);
 }
 
 // Draw the lines between the nodes.
@@ -224,12 +213,12 @@ void GraphViewer::drawLine(const sf::Vector2f & origin, const sf::Vector2f & des
     d3.x += 1;
     // Define a series of 6 vertices
     sf::Vertex line[] = {
-        sf::Vertex(o1, sf::Color::Black),
-        sf::Vertex(d1, sf::Color::Black),
-        sf::Vertex(o2, sf::Color::Black),
-        sf::Vertex(d2, sf::Color::Black),
-        sf::Vertex(o3, sf::Color::Black),
-        sf::Vertex(d3, sf::Color::Black)
+        sf::Vertex(o1, sf::Color::White),
+        sf::Vertex(d1, sf::Color::White),
+        sf::Vertex(o2, sf::Color::White),
+        sf::Vertex(d2, sf::Color::White),
+        sf::Vertex(o3, sf::Color::White),
+        sf::Vertex(d3, sf::Color::White)
     };
     // Draw 3 lines, using the 6 vertices
     window.draw(line, 6, sf::Lines);
