@@ -159,19 +159,20 @@ void GraphViewer::drawGraph(){
     //draw graph connections
     AVLGraph<int> * avlPtr = getGraphPointer();
     //TODO soft-code the 7
-    std::vector<GraphNode<int> * > * nodes;
+    std::vector<GraphNode<int> * > connecteds;
+    std::vector<GraphNode<int> * > nodes;
     std::vector<Edge<int> * > * graph = avlPtr->getSimulationGraph();
     for (int i = 0; i < graph->size(); i++){
-        nodes = (*graph)[i]->getConnectedNodes();
-        if (std::find(nodes->begin(), nodes->end(), nodes[0])==nodes->end())
-            nodes->push_back((*nodes)[0]);
-        if (std::find(nodes->begin(), nodes->end(), nodes[1])==nodes->end())
-            nodes->push_back((*nodes)[1]);
-        nodes->clear();
+        connecteds = (*graph)[i]->getConnectedNodes();
+        if (std::find(nodes.begin(), nodes.end(), connecteds[0])==nodes.end())
+            nodes.push_back(connecteds[0]);
+        if (std::find(nodes.begin(), nodes.end(), connecteds[1])==nodes.end())
+            nodes.push_back(connecteds[1]);
+        connecteds.clear();
     }
 
     for (int i = 0; i < 7; i++){
-        drawNode((*nodes)[i],(*nodes)[i]->getPos());
+        drawNode(nodes[i], nodes[i]->getPos());
     }
 }
 
