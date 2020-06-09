@@ -42,6 +42,7 @@ int main()
     GraphNode<int> node4;
     GraphNode<int> node5;
     GraphNode<int> node6;
+    std::vector<GraphNode<int> * > nodes = {&node0,&node2,&node3,&node4,&node5, &node6};
 
     //initial infections
     node0.infect();
@@ -58,6 +59,7 @@ int main()
     std::vector<Edge<int> * > graph = {&edge0, &edge1, &edge2, &edge3, &edge4, &edge5};
 
     avlGraph.setSimulationGraph(&graph);
+    nodeCoordinates(50, 50, 50, node6. howMany(), &nodes);
     
     GraphViewer viewer("Covid-19 Simulation", "Font.otf", &menu, &avlGraph);
 
@@ -191,7 +193,7 @@ int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int m
                 {    
                     (*nodes)[0]->setTau((*nodes)[1]->getTau()-tau);
                 }
-                (*nodes).clear();
+                nodes->clear();
             }
             
             infectedNodes.erase(infectedNodes.begin() + randIndex);
@@ -239,13 +241,13 @@ void getAtRisk(std::vector<Edge<int> * > * graph, int * susc, std::vector<GraphN
     for (int i = 0; i < graph->size(); i++)
     {
         std::vector<GraphNode<int> * > * nodes = (*graph)[i]->getConnectedNodes();
-        if ((*nodes)[0]->isInfected() && std::find(at_risk->begin(), at_risk->end(), nodes[1])==at_risk->end())
+        if ((*nodes)[0]->isInfected() && std::find(at_risk->begin(), at_risk->end(), (*nodes)[1])==at_risk->end())
         {
             at_risk->push_back((*nodes)[1]);
             (*susc)--;
             (*nodes)[1]->neighborInfected();
         }
-        else if ((*nodes)[1]->isInfected() && std::find(at_risk->begin(), at_risk->end(), nodes[0])==at_risk->end())
+        else if ((*nodes)[1]->isInfected() && std::find(at_risk->begin(), at_risk->end(), (*nodes)[0])==at_risk->end())
         {    
             at_risk->push_back((*nodes)[0]);
             (*susc)--;
@@ -261,9 +263,9 @@ void getInfected(std::vector<Edge<int> * > * graph, std::vector<GraphNode<int> *
     for (int i = 0; i < graph->size(); i++)
     {
         std::vector<GraphNode<int> * > * nodes = (*graph)[i]->getConnectedNodes();
-        if ((*nodes)[0]->isInfected() && std::find(infected->begin(), infected->end(), nodes[0])==infected->end())
+        if ((*nodes)[0]->isInfected() && std::find(infected->begin(), infected->end(), (*nodes)[0])==infected->end())
             infected->push_back((*nodes)[0]);
-        else if ((*nodes)[1]->isInfected() && std::find(infected->begin(), infected->end(), nodes[1])==infected->end())
+        else if ((*nodes)[1]->isInfected() && std::find(infected->begin(), infected->end(), (*nodes)[1])==infected->end())
             infected->push_back((*nodes)[1]);
         nodes->clear();
     }
