@@ -8,7 +8,7 @@
 template <class T>
 class AVLGraph {
     private:
-		std::vector<Edge<int> * > graph;
+		std::vector<Edge<int> * > * graph = nullptr;
         // TreeNode<T> * root = nullptr;
         int indent_increase = 6;
 
@@ -17,15 +17,15 @@ class AVLGraph {
         AVLGraph () {}
         ~AVLGraph () { clear(); }
         void clear  ();
-        // void insert (T _data);
-        void insert(GraphNode<int> * _newNode, GraphNode<int> * _existingNode);
+        void setSimulationGraph(std::vector<Edge<int> * > * _graph) { graph = _graph; }
+        std::vector<Edge<int> * > * getSimulationGraph() { return graph; }
 };
 
 template <class T>
 void AVLGraph<T>::clear()
 {
     //TODO clear graph
-	graph.clear();
+	graph->clear();
 }
 
 #endif

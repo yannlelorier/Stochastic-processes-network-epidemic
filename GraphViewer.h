@@ -49,7 +49,7 @@ class GraphViewer {
         // Constructor
         GraphViewer (std::string window_title, std::string font_name, void (*menu)(AVLGraph<int> *), AVLGraph<int> * tree);
         //TreeViewer (std::string window_name, std::string font_name);
-
+        AVLGraph<int> * getGraphPointer() {return graph_pointer;}
         // Public method to start the drawing process
         void windowListener();
 };
