@@ -1,7 +1,9 @@
 /*
+
     Example of using a class with SFML functions
     To compile link the libraries:
          -lsfml-graphics -lsfml-window -lsfml-system
+         
 */
 
 //TODO gillespie implementation here
@@ -10,6 +12,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <chrono>
+#include <thread>
 #include <ctime>
 #include <math.h>
 #include <random>
@@ -97,11 +100,12 @@ void menu(AVLGraph<int> * tree){
             graph_ptr = tree->getSimulationGraph();
         }
         
+        // std::thread gillespieThread(gillespie,(graph_ptr, 0.3, 0.40, 20, (*graph_ptr)[0]->howMany(),sleepSize));
 
         switch (ans){
             case 'r':
                 std::cout << "Running...\n ";
-                gillespie(graph_ptr, 0.3, 0.40, 5, (*graph_ptr)[0]->howMany(),sleepSize);
+                // gillespieThread.join(); 
                 break;
             case 's':
                 std::cout << "Slowing the simulation down...\n ";
@@ -238,7 +242,6 @@ int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int m
 
 
 void getAtRisk(std::vector<Edge<int> * > * graph, int * susc, std::vector<GraphNode<int> * > * at_risk){
-
     for (int i = 0; i < graph->size(); i++)
     {
         std::vector<GraphNode<int> * > nodes = (*graph)[i]->getConnectedNodes();

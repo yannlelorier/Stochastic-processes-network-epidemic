@@ -45,8 +45,8 @@ void GraphViewer::configure(){
     circle.setRadius(node_radius);
     circle.setPointCount(32);
     circle.setFillColor(sf::Color(255, 154, 162));
-    circle.setOutlineThickness(1.f);
-    circle.setOutlineColor(sf::Color::White);
+    circle.setOutlineThickness(3.0f);
+    circle.setOutlineColor(sf::Color(74, 78, 77));
     circle.setOrigin(circle.getRadius(), circle.getRadius());
 }
 
