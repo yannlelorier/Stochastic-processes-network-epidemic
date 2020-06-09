@@ -21,11 +21,7 @@
 #vscode config
 .vscode/
 
-covid-sim
-Makefile
-CMakeFiles
-CMakeCache.txt
-*.cmake
+build/
 
 
 gillespie

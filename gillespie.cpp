@@ -13,6 +13,7 @@
 #include <ctime>
 #include <math.h>
 #include <random>
+#include <unistd.h>
 #include "GraphViewer.h"
 #include "AVLGraph.h"
 #include "Edge.h"
@@ -25,14 +26,13 @@ void insertPresets(AVLGraph<int> * tree);
 void test_graph();
 void nodeCoordinates(double xCenter, double yCenter, double radius, int steps, std::vector<GraphNode<int> * > * graph);
 void edge_test();
-int gillespie(std::vector<Edge<int> * > * _graph, double tau ,double _gamma, int _max_t, int graphSize); //NOTE graphSize
+int gillespie(std::vector<Edge<int> * > * _graph, double tau ,double _gamma, int _max_t, int graphSize, int sleepSize); //NOTE graphSize
 void getAtRisk(std::vector<Edge<int> * > * graph, int * susc, std::vector<GraphNode<int> * > * at_risk);
 void getInfected(std::vector<Edge<int> * > * graph, std::vector<GraphNode<int> * > * infected);
 // void setRandomInfected(std::vector<Edge<int> * > * graph, std::vector<GraphNode<int> * > * infected);
 // void insertRandom(AVLTree<int> * tree);
 
-int main()
-{
+int main(){
     AVLGraph<int> avlGraph;
     //setting nodes
     GraphNode<int> node0;
@@ -42,7 +42,9 @@ int main()
     GraphNode<int> node4;
     GraphNode<int> node5;
     GraphNode<int> node6;
-    std::vector<GraphNode<int> * > nodes = {&node0, &node1, &node2,&node3,&node4,&node5, &node6};
+    GraphNode<int> node7;
+    GraphNode<int> node8;
+    std::vector<GraphNode<int> * > nodes = {&node0, &node1, &node2,&node3,&node4,&node5, &node6, &node7, &node8};
 
     //initial infections
     node0.infect();
@@ -56,12 +58,13 @@ int main()
     Edge<int> edge3 (&node2, &node5);
     Edge<int> edge4 (&node2, &node3);
     Edge<int> edge5 (&node6, &node5);
-    std::vector<Edge<int> * > graph = {&edge0, &edge1, &edge2, &edge3, &edge4, &edge5};
+    Edge<int> edge6 (&node7, &node8);
+    std::vector<Edge<int> * > graph = {&edge0, &edge1, &edge2, &edge3, &edge4, &edge5, &edge6};
 
     avlGraph.setSimulationGraph(&graph);
-    nodeCoordinates(50, 50, 50, node6.howMany(), &nodes);
-    
-    GraphViewer viewer("Covid-19 Simulation", "Font.otf", &menu, &avlGraph);
+    nodeCoordinates(400, 300, 100, node8.howMany(), &nodes);
+  
+    GraphViewer viewer("Covid-19 Simulation", "../Work-Sans-1.50/fonts/desktop/WorkSans-Regular.otf", &menu, &avlGraph);
 
     viewer.windowListener();
 
@@ -73,10 +76,10 @@ int main()
     return 0;
 }
 
-void menu(AVLGraph<int> * tree)
-{
-    int number;
+void menu(AVLGraph<int> * tree){
+    int sleepSize = 20000;
     char ans = 'a';
+    std::vector<Edge<int> * > * graph_ptr;
 
     while (ans != 'q')
     {
@@ -90,14 +93,19 @@ void menu(AVLGraph<int> * tree)
         std::cout << "Enter your selection: ";
         std::cin >> ans;
 
-        switch (ans)
-        {
+        if (ans == 'r'){
+            graph_ptr = tree->getSimulationGraph();
+        }
+        
+
+        switch (ans){
             case 'r':
                 std::cout << "Running...\n ";
-                gillespie(tree->getSimulationGraph(), 0.3, 0.40, 5, 6);
+                gillespie(graph_ptr, 0.3, 0.40, 5, (*graph_ptr)[0]->howMany(),sleepSize);
                 break;
             case 's':
                 std::cout << "Slowing the simulation down...\n ";
+                sleepSize += 10000;
                 break;
             case 'c':
                 tree->clear();
@@ -120,7 +128,7 @@ void menu(AVLGraph<int> * tree)
 
 //inputs: the graph, recovery rate (gamma), initial infections (pointers to the nodes passed here)
 // and max number of iterations for the simulation
-int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int maxt, int graphSize)
+int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int maxt, int graphSize, int sleepSize)
 {
 
     std::vector<GraphNode<int> * > infectedNodes;
@@ -164,11 +172,12 @@ int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int m
 
     std::exponential_distribution<double> expDist (totalRate); //exponential distribution
 
-    time = expDist(generator); //applying exponential distribution
+    time = expDist(generator); //applying exponential distribution TODO check this
 
     while (time < maxt && totalRate > 0)
     {
         //taken from  https://en.cppreference.com/w/cpp/numeric/random/uniform_real_distribution
+        usleep(sleepSize);
         std::random_device rd;  //Will be used to obtain a seed for the random number engine
         std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
         std::default_random_engine genInt;
@@ -177,20 +186,15 @@ int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int m
 
         double r = realDis(gen);
         int randIndex = intDis(genInt);
-        if (r < totalRecoveryRate)
-        {
+        if (r < totalRecoveryRate){
             std::cout << "Node " << infectedNodes[randIndex]->getindex() << " has recovered" << std::endl;
             infectedNodes[randIndex]->recover();
 
-            for (int i = 0; i < graph->size(); i++)
-            {
+            for (int i = 0; i < graph->size(); i++){
                 std::vector<GraphNode<int> * > nodes = (*graph)[i]->getConnectedNodes();
-                if (nodes[0]==infectedNodes[randIndex])
-                {
+                if (nodes[0]==infectedNodes[randIndex]){
                     nodes[1]->setTau(nodes[1]->getTau()-tau);
-                }
-                else if (nodes[1]==infectedNodes[randIndex])
-                {    
+                } else if (nodes[1]==infectedNodes[randIndex]){    
                     nodes[0]->setTau(nodes[1]->getTau()-tau);
                 }
                 nodes.clear();
@@ -201,8 +205,7 @@ int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int m
             infe--;
             getInfected(graph, &infectedNodes); //is this redundant?
 
-        }else
-        {
+        } else {
             //TODO extract a node from at_risk with prob=at_risk[i]/totalInfectionRate
             //leaving it as uniform distribution for testing (for now)
             std::uniform_int_distribution<> atRiskDis(0, at_risk.size());
@@ -217,8 +220,7 @@ int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int m
 
         }
         susc = at_risk.size();
-        for (int i = 0; i < at_risk.size(); i++)
-        {
+        for (int i = 0; i < at_risk.size(); i++){
             totalInfectionRate += at_risk[i]->getTau();
         }
         
@@ -235,8 +237,7 @@ int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int m
 }
 
 
-void getAtRisk(std::vector<Edge<int> * > * graph, int * susc, std::vector<GraphNode<int> * > * at_risk)
-{
+void getAtRisk(std::vector<Edge<int> * > * graph, int * susc, std::vector<GraphNode<int> * > * at_risk){
 
     for (int i = 0; i < graph->size(); i++)
     {
