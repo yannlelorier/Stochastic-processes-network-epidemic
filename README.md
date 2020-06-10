@@ -19,8 +19,7 @@ The Gillespie algorithm is a methodology that aims to track Markovian processes 
 
 #### 3.1.1 Input/Output
 
-- **Input** Network graph G, a transmission rate &tau;, a recovery rate &gamma;, a set of index node(s) of ```initial_infections```, maximum time t<sub>max</sub>
-[//]: # - **Output** Lists time, S and I giving number in each state at each time, *i.e.* S := |G|-len(```infected_nodes```), I:=len(```infected_nodes```)
+- **Input** Network graph G, a transmission rate &tau;, a recovery rate &gamma;, a set of index node(s) of ```initial_infections```, maximum time t<sub>max</sub>\
 **Output** The Network graph G after it goes through the Gillespie function. 
 
 #### 3.1.2 Variables
