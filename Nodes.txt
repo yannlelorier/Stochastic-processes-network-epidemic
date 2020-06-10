@@ -1,0 +1,8 @@
+#NODES#
+node0={}
+node1{node2,node5,node6}
+node2{node4}
+node3{node0}
+node4{node5,node6}
+node5{}
+node6{}
