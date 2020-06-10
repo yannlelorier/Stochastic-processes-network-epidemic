@@ -74,7 +74,7 @@ Read the [TemplateInstructions](https://github.com/yannlelorier/Covid-19-tracker
 mkdir build && cd build
 cmake ..
 make
-./covid-sim
+./program-name -i <inputFilename>
 ~~~
 
 ## References

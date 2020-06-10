@@ -1,8 +1,11 @@
 #NODES#
-node0={}
-node1{node2,node5,node6}
-node2{node4}
-node3{node0}
-node4{node5,node6}
-node5{}
-node6{}
+7
+0 3
+1 2
+1 5
+1 6
+2 4
+2 5
+5 6
+3 2
+4 1
