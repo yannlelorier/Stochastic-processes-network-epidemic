@@ -24,7 +24,6 @@ class AVLGraph {
 template <class T>
 void AVLGraph<T>::clear()
 {
-    //TODO clear graph
 	graph->clear();
 }
 

@@ -20,7 +20,7 @@ The Gillespie algorithm is a methodology that aims to track Markovian processes 
 #### 3.1.1 Input/Output
 
 - **Input** Network graph G, a transmission rate &tau;, a recovery rate &gamma;, a set of index node(s) of ```initial_infections```, maximum time t<sub>max</sub>
-- **Output** Lists time, S, I and R giving number in each state at each time, *i.e.* S := |G|-len(```infected_nodes```), I:=len(```infected_nodes```) and R:=len( ```infected_nodes```)
+- **Output** Lists time, S and I giving number in each state at each time, *i.e.* S := |G|-len(```infected_nodes```), I:=len(```infected_nodes```)
 
 #### 3.1.2 Variables
 
@@ -40,7 +40,7 @@ The main loop iterating, until ```time``` &lt; t<sub>max</sub> and the ```total_
 
     - if r &lt; ```total_recovery_rate``` then remove one node from the infected nodes, and reduce infection rate
     - if not, then add one node in the ```at_risk_nodes``` to put it in the ```infected_nodes``` group, and update its neghbors to ```at_risk_nodes``` group.
-- update ```times```, S, I and R
+- update ```times```, S and I
 - update total recovery rate, total infection rate, and total rate
 - ```time``` is updated as ```time + exponential_variate(total rate)```
 
@@ -49,9 +49,8 @@ The main loop iterating, until ```time``` &lt; t<sub>max</sub> and the ```total_
 The following steps will be taken:
 
 - [ ] From a given file, the initial graph is read
-- [ ] The iteration of the algorithm is made and logged into a buffer to write into a pipe in order to create an epidemic_log file
-- [ ] Various files can be loaded into the program at the same time using threads
-- [ ] An output graph is dumped, to see the final result at a given time.
+- [ ] The program may be stopped at any time by pressing CTRL+C or CTRL+Z
+- [ ] An output graph is dumped, to see the final result at a given time
 
 ### 3.3 Progress
 
@@ -59,14 +58,14 @@ The following steps will be taken:
 
 ## 4. Topics
 
-1. **System Calls** or **pipes**
-   - To log the information into a file
+1. **Pointers**
+    - To store the graph information in interconnected objects
 2. **Threads**
    - Graph creation
-3. **Inter Process Communication**
-    - Client/Server communication
-4. **Dynamic Memory**
-    - To store the graph information in an array
+4. **Signals**
+    - To correctly pause or stop the simulation.
+5. **Dynamic Memory**
+    - To store the graph information in an vector
 
 ## 5. Use Cases
 

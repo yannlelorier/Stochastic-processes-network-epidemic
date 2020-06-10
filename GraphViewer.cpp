@@ -154,9 +154,7 @@ void GraphViewer::drawTitle(){
 }
 
 
-void GraphViewer::drawGraph(){
-//TODO Draw node ()iterative
-    //draw graph connections
+void GraphViewer::drawGraph(){  
     AVLGraph<int> * avlPtr = getGraphPointer();
     std::vector<GraphNode<int> * > connecteds;
     std::vector<GraphNode<int> * > nodes;
