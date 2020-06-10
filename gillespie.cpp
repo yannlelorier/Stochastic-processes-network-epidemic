@@ -186,8 +186,10 @@ int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int m
         {
             int dummy;
             volatile int * pdummy = &dummy;
-            for (int i = 0; i < 1'000'000; ++i)
+            for (int i = 0; i < 1000000; i++)
+            {
                 *pdummy = i;
+            }
         }
         // usleep(sleepSize);
         std::random_device rd;  //Will be used to obtain a seed for the random number engine
@@ -335,7 +337,8 @@ void nodeCoordinates(double xCenter, double yCenter, double radius, int steps, s
     steps = 0;
     x = y = 0;
 
-	for(circleCounter; circleCounter <= 2*PI; circleCounter += change){
+	for(; circleCounter <= 2*PI; circleCounter += change)
+    {
         x = xCenter + (radius * (cos(circleCounter)));
 		y = yCenter + (radius * (sin(circleCounter)));
         pos = sf::Vector2f(x,y);
