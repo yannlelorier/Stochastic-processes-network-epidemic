@@ -100,12 +100,12 @@ void menu(AVLGraph<int> * tree){
             graph_ptr = tree->getSimulationGraph();
         }
         
-        // std::thread gillespieThread(gillespie,(graph_ptr, 0.3, 0.40, 20, (*graph_ptr)[0]->howMany(),sleepSize));
+        std::thread gillespieThread(gillespie,graph_ptr, 0.3, 0.40, 20, (*graph_ptr)[0]->howMany(),sleepSize);
 
         switch (ans){
             case 'r':
                 std::cout << "Running...\n ";
-                // gillespieThread.join(); 
+                gillespieThread.join(); 
                 break;
             case 's':
                 std::cout << "Slowing the simulation down...\n ";
