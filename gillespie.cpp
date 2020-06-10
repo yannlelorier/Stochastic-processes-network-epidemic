@@ -6,9 +6,6 @@
          
 */
 
-//TODO gillespie implementation here
-//use std::exponential_distribution for per-edge tau (infection rate)
-
 #include <iostream>
 #include <cstdlib>
 #include <chrono>
@@ -16,6 +13,8 @@
 #include <ctime>
 #include <math.h>
 #include <random>
+#include <fstream>
+#include <string>
 #include <unistd.h>
 #include "GraphViewer.h"
 #include "AVLGraph.h"
@@ -25,8 +24,6 @@
 #define MAX 200
 
 void menu(AVLGraph<int> * tree);
-void insertPresets(AVLGraph<int> * tree);
-void test_graph();
 void nodeCoordinates(double xCenter, double yCenter, double radius, int steps, std::vector<GraphNode<int> * > * graph);
 void edge_test();
 int gillespie(std::vector<Edge<int> * > * _graph, double tau ,double _gamma, int _max_t, int graphSize, int sleepSize); //NOTE graphSize
@@ -73,25 +70,19 @@ int main(){
 
     //dev purposes only
 	
-
-    // test_graph();
     
     return 0;
 }
 
 void menu(AVLGraph<int> * tree){
-    int sleepSize = 2;
+    int sleepSize = 1;
     char ans = 'a';
     std::vector<Edge<int> * > * graph_ptr;
 
     while (ans != 'q')
     {
         std::cout << "\n== SIR Epidemic - Gillespie Algorithm ==\n";
-        std::cout << "\tr. Run the simulation\n"; 
-        std::cout << "\ts. Slow the simulation\n"; //TODO slow simulation
-        std::cout << "\tc. Clear the tree\n";
-        std::cout << "\tp. Pause the simulation\n"; //TODO pause simulation
-        std::cout << "\tp. Print the log up to this point\n"; //TODO log
+        std::cout << "\tr. Run the simulation\n";
         std::cout << "\tq. Quit the program\n";
         std::cout << "Enter your selection: ";
         std::cin >> ans;
@@ -106,17 +97,6 @@ void menu(AVLGraph<int> * tree){
             case 'r':
                 std::cout << "Running...\n ";
                 gillespieThread.join(); 
-                break;
-            case 's':
-                std::cout << "Slowing the simulation down...\n ";
-                sleepSize += 1;
-                break;
-            case 'c':
-                tree->clear();
-                break;
-            case 'p':
-                std::cout << "Pausing simulation" << std::endl;
-                // tree->printInOrder();
                 break;
             case 'q':
                 std::cout << "See you later" << std::endl;
@@ -285,48 +265,6 @@ void getInfected(std::vector<Edge<int> * > * graph, std::vector<GraphNode<int> *
     }
 }
 
-void test_graph()
-{
-    GraphNode<int> node0;
-    GraphNode<int> node1;
-    GraphNode<int> node2;
-    GraphNode<int> node3;
-    GraphNode<int> node4;
-
-    int steps = node0.howMany();
-
-    std::vector<GraphNode<int> * > graph = {&node0, &node1, &node2, &node3, &node4};   
-    
-    nodeCoordinates(0,0,50,steps, &graph);
-
-    /*
-    // node1 {n0}{n1}{n2}
-    Edge<int> edge0 (&node0, &node2);
-    Edge<int> edge1 (&node0, &node3);
-    Edge<int> edge2 (&node1, &node2);
-    Edge<int> edge3 (&node2, &node1);
-    Edge<int> edge4 (&node2, &node3);
-    Edge<int> edge5 (&node1, &node4);
-    std::vector<Edge<int> * > edges;
-    edges.push_back(&edge0);
-    edges.push_back(&edge1);
-    edges.push_back(&edge2);
-    edges.push_back(&edge3);
-    edges.push_back(&edge4);
-    edges.push_back(&edge5);
-
-
-    std::cout << "Edges creation: " <<  edge0.howMany() << std::endl;
-    std::cout << "Nodes creation: " <<  node0.howMany() << std::endl;
-
-    for (int i = 0; i < edge0.howMany()-1; i++){
-        std::vector<GraphNode<int> * > nodes = edges[i]->getConnectedNodes();
-        std::cout << "Edge " << i << " has index " << edges[i]->getindex() <<  " and nodes " << nodes[0]->getindex() << " " << nodes[1]->getindex() << std::endl;
-    }
-    */
-
-}
-
 // To change the radius, xCenter and yCenter variables, modify the values in the config.txt file
 void nodeCoordinates(double xCenter, double yCenter, double radius, int steps, std::vector<GraphNode<int> * > * graph){ 
 	static double PI = 4*atan(1);
@@ -347,3 +285,25 @@ void nodeCoordinates(double xCenter, double yCenter, double radius, int steps, s
         steps ++;
 	}
 }
+
+std::vector<Edge<int> * > * readGraph(std::string filename)
+{
+    std::vector<Edge<int> * > * graph;
+    std::ifstream file (filename);
+    std::string line;
+    int nodes = 0;
+    file.open(filename);
+    if (!file)
+    {
+        std::cerr << "Unable to open file '" << filename << "'.";
+        exit(1);
+    }
+    
+    getline(file, line); //removing header
+    while (getline(file, line))
+    {
+        
+    }
+    file.close();
+
+} 
