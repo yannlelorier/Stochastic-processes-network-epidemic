@@ -1,6 +1,19 @@
 #ifndef OBJECT_COUNTER_H
 #define OBJECT_COUNTER_H
 
+#include <iostream>
+#include <cstdlib>
+#include <chrono>
+#include <thread>
+#include <ctime>
+#include <math.h>
+#include <random>
+#include <fstream>
+#include <string>
+#include <unistd.h>
+#include <time.h>
+#include <stdlib.h>
+
 template<typename T>
 class Counter {
     public:

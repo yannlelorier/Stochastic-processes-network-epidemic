@@ -49,8 +49,7 @@ The main loop iterating, until ```time``` &lt; t<sub>max</sub> and the ```total_
 The following steps will be taken:
 
 - [ ] From a given file, the initial graph is read
-- [ ] The program may be stopped at any time by pressing CTRL+C or CTRL+Z
-- [ ] An output graph is dumped, to see the final result at a given time
+- [ ] The program may be stopped at any time by pressing CTRL+C
 
 ### 3.3 Progress
 
@@ -83,7 +82,7 @@ We wish to see different snapshots at different periods of time, letting the alg
 mkdir build && cd build
 cmake ..
 make
-./covid-sim
+./program-name -i <inputFilename>
 ~~~
 
 ## References

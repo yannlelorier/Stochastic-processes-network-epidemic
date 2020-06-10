@@ -6,16 +6,6 @@
          
 */
 
-#include <iostream>
-#include <cstdlib>
-#include <chrono>
-#include <thread>
-#include <ctime>
-#include <math.h>
-#include <random>
-#include <fstream>
-#include <string>
-#include <unistd.h>
 #include "GraphViewer.h"
 #include "AVLGraph.h"
 #include "Edge.h"
@@ -25,51 +15,87 @@
 
 void menu(AVLGraph<int> * tree);
 void nodeCoordinates(double xCenter, double yCenter, double radius, int steps, std::vector<GraphNode<int> * > * graph);
-void edge_test();
-int gillespie(std::vector<Edge<int> * > * _graph, double tau ,double _gamma, int _max_t, int graphSize, int sleepSize); //NOTE graphSize
+int gillespie(std::vector<Edge<int> * > * _graph, double tau ,double _gamma, int _max_t, int graphSize, int sleepSize);
 void getAtRisk(std::vector<Edge<int> * > * graph, int * susc, std::vector<GraphNode<int> * > * at_risk);
 void getInfected(std::vector<Edge<int> * > * graph, std::vector<GraphNode<int> * > * infected);
-// void setRandomInfected(std::vector<Edge<int> * > * graph, std::vector<GraphNode<int> * > * infected);
-// void insertRandom(AVLTree<int> * tree);
+void readGraph(const char * filename, std::vector<Edge<int> * > * graph, std::vector<GraphNode<int> * > * nodes);
+void setRandomInfected(std::vector<GraphNode<int> * > * nodes);
 
-int main(){
+void usage(char *argv[]){
+    std::cout << "Usage:\n\t" << argv[0] <<  " -i <inputFilename>\n";
+    exit(1);
+}
+
+char * optParser(int argc, char *argv[])
+{
+    int c;
+    char * filename = NULL;
+    while ((c = getopt (argc, argv, "i:")) != -1)
+    {
+        switch (c)
+        {
+        case 'i':
+            filename = optarg;
+            break;
+        
+        default:
+            usage(argv);
+            break;
+        }
+    }
+    return filename;
+}
+
+
+
+int main(int argc, char *argv[]){
+
+    if (argc == 1)
+    {
+        usage(argv);
+    }
+
+    char * filename = optParser(argc, argv);
+
+
+    // //setting nodes
+    // GraphNode<int> node0;
+    // GraphNode<int> node1;
+    // GraphNode<int> node2;
+    // GraphNode<int> node3;
+    // GraphNode<int> node4;
+    // GraphNode<int> node5;
+    // GraphNode<int> node6;
+    // GraphNode<int> node7;
+    // GraphNode<int> node8;
+    // std::vector<GraphNode<int> * > nodes = {&node0, &node1, &node2,&node3,&node4,&node5, &node6, &node7, &node8};
+
+    // //initial infections
+    // node0.infect();
+    // node2.infect();
+
+    // //setting connections
+
+    // Edge<int> edge0 (&node0, &node1);
+    // Edge<int> edge1 (&node1, &node4);
+    // Edge<int> edge2 (&node4, &node2);
+    // Edge<int> edge3 (&node2, &node5);
+    // Edge<int> edge4 (&node2, &node3);
+    // Edge<int> edge5 (&node6, &node5);
+    // Edge<int> edge6 (&node7, &node8);
     AVLGraph<int> avlGraph;
-    //setting nodes
-    GraphNode<int> node0;
-    GraphNode<int> node1;
-    GraphNode<int> node2;
-    GraphNode<int> node3;
-    GraphNode<int> node4;
-    GraphNode<int> node5;
-    GraphNode<int> node6;
-    GraphNode<int> node7;
-    GraphNode<int> node8;
-    std::vector<GraphNode<int> * > nodes = {&node0, &node1, &node2,&node3,&node4,&node5, &node6, &node7, &node8};
+    std::vector<Edge<int> * > graph;
+    std::vector<GraphNode<int> * > nodes;
+    readGraph(filename, &graph, &nodes);
 
-    //initial infections
-    node0.infect();
-    node2.infect();
-
-    //setting connections
-
-    Edge<int> edge0 (&node0, &node1);
-    Edge<int> edge1 (&node1, &node4);
-    Edge<int> edge2 (&node4, &node2);
-    Edge<int> edge3 (&node2, &node5);
-    Edge<int> edge4 (&node2, &node3);
-    Edge<int> edge5 (&node6, &node5);
-    Edge<int> edge6 (&node7, &node8);
-    std::vector<Edge<int> * > graph = {&edge0, &edge1, &edge2, &edge3, &edge4, &edge5, &edge6};
+    setRandomInfected(&nodes);
 
     avlGraph.setSimulationGraph(&graph);
-    nodeCoordinates(400, 300, 100, node8.howMany(), &nodes);
+    nodeCoordinates(400, 300, 100, nodes[0]->howMany(), &nodes);
   
     GraphViewer viewer("Covid-19 Simulation", "../Work-Sans-1.50/fonts/desktop/WorkSans-Regular.otf", &menu, &avlGraph);
 
     viewer.windowListener();
-
-    //dev purposes only
-	
     
     return 0;
 }
@@ -86,12 +112,9 @@ void menu(AVLGraph<int> * tree){
         std::cout << "\tq. Quit the program\n";
         std::cout << "Enter your selection: ";
         std::cin >> ans;
-
-        if (ans == 'r'){
-            graph_ptr = tree->getSimulationGraph();
-        }
         
-        std::thread gillespieThread(gillespie,graph_ptr, 0.3, 0.40, 20, (*graph_ptr)[0]->howMany(),sleepSize);
+        graph_ptr = tree->getSimulationGraph();
+        std::thread gillespieThread(gillespie,graph_ptr, 0.3, 0.40, 5, (*graph_ptr)[0]->howMany(), sleepSize);
 
         switch (ans){
             case 'r':
@@ -139,7 +162,7 @@ int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int m
     // std::cout << "In iteration " << iteration << std::endl;
 
     getAtRisk(graph, &susc, &at_risk);
-
+    //initial at_risks
     std::cout << "At risk nodes:" << std::endl;
     for (int i = 0; i < at_risk.size(); i++)
     {
@@ -156,22 +179,13 @@ int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int m
 
     std::exponential_distribution<double> expDist (totalRate); //exponential distribution
 
-    time = expDist(generator); //applying exponential distribution TODO check this
+    time = expDist(generator);
 
+    //main algorithm loop
     while (time < maxt && totalRate > 0)
     {
         //taken from  https://en.cppreference.com/w/cpp/numeric/random/uniform_real_distribution
-        const auto t0 = std::clock();
-        while ((std::clock() - t0) / CLOCKS_PER_SEC < sleepSize)
-        {
-            int dummy;
-            volatile int * pdummy = &dummy;
-            for (int i = 0; i < 1000000; i++)
-            {
-                *pdummy = i;
-            }
-        }
-        // usleep(sleepSize);
+        
         std::random_device rd;  //Will be used to obtain a seed for the random number engine
         std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
         std::default_random_engine genInt;
@@ -195,23 +209,43 @@ int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int m
             }
             
             infectedNodes.erase(infectedNodes.begin() + randIndex);
-            //or
             infe--;
-            getInfected(graph, &infectedNodes); //is this redundant?
+            getInfected(graph, &infectedNodes);
+            const auto t0 = std::clock();
+            while ((std::clock() - t0) / CLOCKS_PER_SEC < sleepSize)
+            {
+                int dummy;
+                volatile int * pdummy = &dummy;
+                for (int i = 0; i < 1000000; i++)
+                {
+                    *pdummy = i;
+                }
+            }
 
         } else {
             //TODO extract a node from at_risk with prob=at_risk[i]/totalInfectionRate
             //leaving it as uniform distribution for testing (for now)
             std::uniform_int_distribution<> atRiskDis(0, at_risk.size());
             randIndex = atRiskDis(genInt);
-            std::cout << "randIndex: " << randIndex << std::endl;
-            std::cout << "Node " << at_risk[randIndex]->getindex() << " was infected" << std::endl;
-            at_risk[randIndex]->infect();
-            infe++;
-            at_risk.erase(at_risk.begin() + randIndex);
-            getInfected(graph, &infectedNodes);
-            getAtRisk(graph, &susc, &at_risk);
-
+            if (!at_risk[randIndex]->isInfected())
+            {
+                std::cout << "Node " << at_risk[randIndex]->getindex() << " was infected" << std::endl;
+                at_risk[randIndex]->infect();
+                infe++;
+                at_risk.erase(at_risk.begin() + randIndex);
+                getInfected(graph, &infectedNodes);
+                getAtRisk(graph, &susc, &at_risk);
+                const auto t0 = std::clock();
+                while ((std::clock() - t0) / CLOCKS_PER_SEC < sleepSize)
+                {
+                    int dummy;
+                    volatile int * pdummy = &dummy;
+                    for (int i = 0; i < 1000000; i++)
+                    {
+                        *pdummy = i;
+                    }
+                }
+            }
         }
         susc = at_risk.size();
         for (int i = 0; i < at_risk.size(); i++){
@@ -286,24 +320,54 @@ void nodeCoordinates(double xCenter, double yCenter, double radius, int steps, s
 	}
 }
 
-std::vector<Edge<int> * > * readGraph(std::string filename)
+void readGraph(const char * filename, std::vector<Edge<int> * > * graph, std::vector<GraphNode<int> * > * nodeVec)
 {
-    std::vector<Edge<int> * > * graph;
-    std::ifstream file (filename);
-    std::string line;
+    FILE * file = NULL;
+    char buffer[100];
     int nodes = 0;
-    file.open(filename);
+    int nodeFrom = 0;
+    int nodeTo = 0;
+
+    file = fopen(filename, "r");
+
     if (!file)
     {
-        std::cerr << "Unable to open file '" << filename << "'.";
+        std::cerr << "Unable to open file '" << filename << "'.\n";
         exit(1);
     }
-    
-    getline(file, line); //removing header
-    while (getline(file, line))
-    {
-        
-    }
-    file.close();
 
+    fgets(buffer, 100, file);
+
+    int createdNodes = 0;
+    fscanf(file, "%d\n", &nodes);
+
+
+    while (createdNodes < nodes)
+    {
+        nodeVec->push_back(new GraphNode<int>);
+        createdNodes++;
+    }
+
+    createdNodes = 0;
+    std::cout << "nodeVec size" << nodeVec->size() << std::endl;
+
+    while (fscanf(file, "%d %d\n", &nodeFrom, &nodeTo) != EOF)
+    {
+        graph->push_back(new Edge<int> ((*nodeVec)[nodeFrom], (*nodeVec)[nodeTo]));
+        createdNodes++;
+    }
 } 
+
+void setRandomInfected(std::vector<GraphNode<int> * > * nodes)
+{
+    srand(time(NULL));
+    int no_infected = rand()%(nodes->size());
+    int randIndex = 0;
+    for (int i = 0; i < no_infected; i++)
+    {
+        srand(time(NULL));
+        randIndex = rand()%no_infected;
+        (*nodes)[randIndex]->infect();
+    }
+    
+}
