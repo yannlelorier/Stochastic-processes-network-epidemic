@@ -80,7 +80,7 @@ int main(){
 }
 
 void menu(AVLGraph<int> * tree){
-    int sleepSize = 20000;
+    int sleepSize = 2;
     char ans = 'a';
     std::vector<Edge<int> * > * graph_ptr;
 
@@ -109,7 +109,7 @@ void menu(AVLGraph<int> * tree){
                 break;
             case 's':
                 std::cout << "Slowing the simulation down...\n ";
-                sleepSize += 10000;
+                sleepSize += 1;
                 break;
             case 'c':
                 tree->clear();
@@ -181,7 +181,15 @@ int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int m
     while (time < maxt && totalRate > 0)
     {
         //taken from  https://en.cppreference.com/w/cpp/numeric/random/uniform_real_distribution
-        usleep(sleepSize);
+        const auto t0 = std::clock();
+        while ((std::clock() - t0) / CLOCKS_PER_SEC < sleepSize)
+        {
+            int dummy;
+            volatile int * pdummy = &dummy;
+            for (int i = 0; i < 1'000'000; ++i)
+                *pdummy = i;
+        }
+        // usleep(sleepSize);
         std::random_device rd;  //Will be used to obtain a seed for the random number engine
         std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
         std::default_random_engine genInt;
@@ -214,11 +222,11 @@ int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int m
             //leaving it as uniform distribution for testing (for now)
             std::uniform_int_distribution<> atRiskDis(0, at_risk.size());
             randIndex = atRiskDis(genInt);
-            // std::cout << "randIndex: " << randIndex << std::endl;
+            std::cout << "randIndex: " << randIndex << std::endl;
             std::cout << "Node " << at_risk[randIndex]->getindex() << " was infected" << std::endl;
             at_risk[randIndex]->infect();
             infe++;
-            // at_risk.erase(at_risk.begin() + randomIndex);
+            at_risk.erase(at_risk.begin() + randIndex);
             getInfected(graph, &infectedNodes);
             getAtRisk(graph, &susc, &at_risk);
 
