@@ -68,6 +68,8 @@ The programs serves the pupose of being a close representation of a virus outbur
 
 ## 7. Running the program
 
+Read the [TemplateInstructions](https://github.com/yannlelorier/Covid-19-tracker-simulator/TemplateInstructions.txt) file to modify the [Nodes.txt](https://github.com/yannlelorier/Covid-19-tracker-simulator/Nodes.txt) file to your liking.
+
 ~~~sh
 mkdir build && cd build
 cmake ..
