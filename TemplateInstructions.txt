@@ -1,0 +1,6 @@
+#NODE INPUT INSTRUCTIONS#
+There are only two concepts contained inn the Nodes.txt file that should be modified:
+    The node count has to be set in the second line
+    The nodes and their relations. These must be identified by a number and the relations should be stablished one by one, the template goes as follows: NODE_IDENTIFIER RELATED_NODE. To assign more than one relation to a node, the same syntax should be applied in the following line; for example:
+        0 1 #SETS THE NODE 0 AND ITS RELATION TO NODE 1#
+        0 2 #SETS NODE 0'S ITS RELATION TO NODE 2#

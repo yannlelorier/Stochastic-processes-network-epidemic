@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 
-project(covid-sim)
+project(Stochastic_epidemic_simulation)
 SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=c++11 -pthread -g -pedantic")
 
 ## If you want to link SFML statically
@@ -19,5 +19,5 @@ find_package(Threads)
 ## SFML
 find_package(SFML 2.5 COMPONENTS graphics REQUIRED)
 
-add_executable(covid-sim gillespie.cpp GraphViewer.cpp)
-target_link_libraries(covid-sim sfml-graphics sfml-window sfml-system ${CMAKE_THREAD_LIBS_INIT})
+add_executable(Stochastic_epidemic_simulation gillespie.cpp GraphViewer.cpp)
+target_link_libraries(Stochastic_epidemic_simulation sfml-graphics sfml-window sfml-system ${CMAKE_THREAD_LIBS_INIT})

@@ -1,3 +1,14 @@
+/*------------------------------------------------- Edge.h ---------------
+    |   Purpose: Functions as the constructor for the Edge class and 
+    |       defines many functions used to get and set different values.
+    |
+    |   Developers:  
+    |       Carlos García - https://github.com/cxrlos
+    |       Victor Coeto - https://github.com/vcoetoG
+    |       Yann Le Lorier - https://github.com/yannlelorier
+    |
+    *-------------------------------------------------------------------*/
+
 #ifndef EDGE_H
 #define EDGE_H
 

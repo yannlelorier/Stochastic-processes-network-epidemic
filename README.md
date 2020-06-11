@@ -1,5 +1,15 @@
+<!------------------------------------------------- README ---------------
+    |
+    |   Developers:  
+    |       Carlos García - https://github.com/cxrlos
+    |       Victor Coeto - https://github.com/vcoetoG
+    |       Yann Le Lorier - https://github.com/yannlelorier
+    |
+    *-------------------------------------------------------------------->
 
 # Stochastic simulation of a network-based epidemic
+
+![Demo](Demo.gif)
 
 ## 1. Authors
 
@@ -68,7 +78,7 @@ The programs serves the pupose of being a close representation of a virus outbur
 
 ## 7. Running the program
 
-Read the [TemplateInstructions](https://github.com/yannlelorier/Covid-19-tracker-simulator/TemplateInstructions.txt) file to modify the [Nodes.txt](https://github.com/yannlelorier/Covid-19-tracker-simulator/Nodes.txt) file to your liking.
+Read the [TemplateInstructions](https://github.com/yannlelorier/Covid-19-tracker-simulator/blob/master/TemplateInstructions.txt) file to modify the [Nodes](https://github.com/yannlelorier/Covid-19-tracker-simulator/blob/master/Nodes.txt) file to your liking.
 
 ~~~sh
 mkdir build && cd build

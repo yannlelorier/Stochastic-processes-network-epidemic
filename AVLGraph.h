@@ -1,3 +1,14 @@
+/*------------------------------------------------- AVLGraph.h -----------
+    |   Purpose: Functions as the constructor for the AVLGraph class and
+    |       contains a clear function to wipe out the graph.
+    |
+    |   Developers:  
+    |       Carlos García - https://github.com/cxrlos
+    |       Victor Coeto - https://github.com/vcoetoG
+    |       Yann Le Lorier - https://github.com/yannlelorier
+    |
+    *-------------------------------------------------------------------*/
+
 #ifndef BINARY_TREE_H
 #define BINARY_TREE_H
 
@@ -6,10 +17,9 @@
 #include "Edge.h"
 
 template <class T>
-class AVLGraph {
+class AVLGraph{
     private:
 		std::vector<Edge<int> * > * graph = nullptr;
-        // TreeNode<T> * root = nullptr;
         int indent_increase = 6;
 
 
@@ -22,8 +32,7 @@ class AVLGraph {
 };
 
 template <class T>
-void AVLGraph<T>::clear()
-{
+void AVLGraph<T>::clear(){
 	graph->clear();
 }
 

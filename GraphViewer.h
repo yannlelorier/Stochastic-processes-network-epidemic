@@ -1,3 +1,17 @@
+/*------------------------------------------------- GraphViewer.h --------
+    |   Purpose: Functions as the constructor for the GraphViewer class
+    |       and defines many functions used to draw the GUI elements and 
+    |       create relations between the nodes.
+    |
+    |   Developers:  
+    |       Carlos García - https://github.com/cxrlos
+    |       Victor Coeto - https://github.com/vcoetoG
+    |       Yann Le Lorier - https://github.com/yannlelorier
+    |       Template provided by Gilberto Echeverria -
+    |           https://github.com/gilecheverria
+    |
+    *-------------------------------------------------------------------*/
+
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include "AVLGraph.h"

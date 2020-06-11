@@ -1,89 +1,162 @@
-/*
-
-    Example of using a class with SFML functions
-    To compile link the libraries:
-         -lsfml-graphics -lsfml-window -lsfml-system
-         
-*/
+/*------------------------------------------------- Gillespie.cpp --------
+    |   Purpose: Serves as the main function, reads the file from the 
+    |       .txt input file and then runs the Gillespie algorithm through
+    |       the described graph. Throughout the script there are multiple
+    |       functions that are described in the following lines.
+    |
+    |   Functions:
+    |       main() - Main driver function
+    |       menu() - Runs the selection menu.
+    |       readGraph() - Reads the .txt file.
+    |       nodeCoordinates() - Based on the number of nodes, it assigns a
+    |           set of coordinates for each node.
+    |       setRandomInfected() - Sets a random number of nodes to be 
+    |           infected and randomly chooses nodes to set the respective
+    |           status.
+    |       gillespie() - Runs the Gillespie algorithm over the graph. The
+    |           inputs are the following: the graph, recovery rate (gamma),
+    |           initial infections and max number of iterations for the
+    |           simulation.
+    |       getAtRisk() - Calculates if a node is next to an infected
+    |           neighbor.
+    |       getInfected() - Calculates if a node is infected.
+    |
+    |   Developers:  
+    |       Carlos García - https://github.com/cxrlos
+    |       Victor Coeto - https://github.com/vcoetoG
+    |       Yann Le Lorier - https://github.com/yannlelorier
+    |
+    *-------------------------------------------------------------------*/
 
 #include "GraphViewer.h"
-#include "AVLGraph.h"
-#include "Edge.h"
 
-// Define a maximum limit for the random numbers
-#define MAX 200
-int interrupted = 0;
+int interrupted = 0; // Variable used by the signal handler
 
 void menu(AVLGraph<int> * tree);
-void nodeCoordinates(double xCenter, double yCenter, double radius, int steps, std::vector<GraphNode<int> * > * graph);
 int gillespie(std::vector<Edge<int> * > * _graph, double tau ,double _gamma, int _max_t, int graphSize, int sleepSize);
-void getAtRisk(std::vector<Edge<int> * > * graph, int * susc, std::vector<GraphNode<int> * > * at_risk);
-void getInfected(std::vector<Edge<int> * > * graph, std::vector<GraphNode<int> * > * infected);
-void readGraph(const char * filename, std::vector<Edge<int> * > * graph, std::vector<GraphNode<int> * > * nodes);
-void setRandomInfected(std::vector<GraphNode<int> * > * nodes);
 
 void usage(char *argv[]){
     std::cout << "Usage:\n\t" << argv[0] <<  " -i <inputFilename>\n";
     exit(1);
 }
 
-char * optParser(int argc, char *argv[])
-{
+char * optParser(int argc, char *argv[]){ // Receives the input file as a line argument
     int c;
     char * filename = NULL;
-    while ((c = getopt (argc, argv, "i:")) != -1)
-    {
-        switch (c)
-        {
-        case 'i':
-            filename = optarg;
-            break;
-        
-        default:
-            usage(argv);
-            break;
+    while ((c = getopt (argc, argv, "i:")) != -1){
+        switch (c){
+            case 'i':
+                filename = optarg;
+                break;
+            
+            default:
+                usage(argv);
+                break;
         }
     }
     return filename;
 }
 
+void readGraph(const char * filename, std::vector<Edge<int> * > * graph, std::vector<GraphNode<int> * > * nodeVec){
+    FILE * file = NULL;
+    char buffer[100];
+    int nodes = 0;
+    int nodeFrom = 0;
+    int nodeTo = 0;
 
+    file = fopen(filename, "r");
+
+    if (!file){
+        std::cerr << "\nUnable to open file " << filename << "\n";
+        exit(1);
+    }
+
+    fgets(buffer, 100, file);
+
+    int createdNodes = 0;
+    fscanf(file, "%d\n", &nodes);
+
+
+    while (createdNodes < nodes){
+        nodeVec->push_back(new GraphNode<int>);
+        createdNodes++;
+    }
+
+    createdNodes = 0;
+    std::cout << "nodeVec size" << nodeVec->size() << std::endl;
+
+    while (fscanf(file, "%d %d\n", &nodeFrom, &nodeTo) != EOF){
+        graph->push_back(new Edge<int> ((*nodeVec)[nodeFrom], (*nodeVec)[nodeTo]));
+        createdNodes++;
+    }
+}
+
+void nodeCoordinates(double xCenter, double yCenter, double radius, int steps, std::vector<GraphNode<int> * > * graph){ 
+	static double PI = 4*atan(1);
+	double change = (2*PI)/steps;
+	double circleCounter = change;
+    double x,y;
+    sf::Vector2f pos;
+    steps = 0;
+    x = y = 0;
+
+	for(; circleCounter <= 2*PI; circleCounter += change){
+        x = xCenter + (radius * (cos(circleCounter)));
+		y = yCenter + (radius * (sin(circleCounter)));
+        pos = sf::Vector2f(x,y);
+        (*graph)[steps]->setPos(pos);
+        std::cout << std::fixed << std::setprecision(20) << "Node " << steps <<  "\tX = " <<  pos.x << "\nY = " << pos.y << "\n" << std::endl;
+        steps ++;
+	}
+} 
+
+void setRandomInfected(std::vector<GraphNode<int> * > * nodes){
+    srand(time(NULL));
+    int no_infected = rand()%(nodes->size());
+    int randIndex = 0;
+    for (int i = 0; i < no_infected; i++){
+        srand(time(NULL));
+        randIndex = rand()%no_infected;
+        (*nodes)[randIndex]->infect();
+    }
+}
+
+void getAtRisk(std::vector<Edge<int> * > * graph, int * susc, std::vector<GraphNode<int> * > * at_risk){
+
+    for (int i = 0; i < graph->size(); i++){
+        std::vector<GraphNode<int> * > nodes = (*graph)[i]->getConnectedNodes();
+        if (nodes[0]->isInfected() && std::find(at_risk->begin(), at_risk->end(), nodes[1])==at_risk->end()){
+            at_risk->push_back(nodes[1]);
+            (*susc)--;
+            nodes[1]->neighborInfected();
+        } else if (nodes[1]->isInfected() && std::find(at_risk->begin(), at_risk->end(), nodes[0])==at_risk->end()){    
+            at_risk->push_back(nodes[0]);
+            (*susc)--;
+            nodes[0]->neighborInfected();
+        } nodes.clear();
+    }
+}
+
+void getInfected(std::vector<Edge<int> * > * graph, std::vector<GraphNode<int> * > * infected){
+
+    for (int i = 0; i < graph->size(); i++){
+        std::vector<GraphNode<int> * > nodes = (*graph)[i]->getConnectedNodes();
+        if (nodes[0]->isInfected() && std::find(infected->begin(), infected->end(), nodes[0])==infected->end())
+            infected->push_back(nodes[0]);
+        else if (nodes[1]->isInfected() && std::find(infected->begin(), infected->end(), nodes[1])==infected->end())
+            infected->push_back(nodes[1]);
+        nodes.clear();
+    }
+}
 
 int main(int argc, char *argv[]){
 
-    if (argc == 1)
-    {
+    if (argc == 1){
         usage(argv);
     }
 
     char * filename = optParser(argc, argv);
 
-
-    // //setting nodes
-    // GraphNode<int> node0;
-    // GraphNode<int> node1;
-    // GraphNode<int> node2;
-    // GraphNode<int> node3;
-    // GraphNode<int> node4;
-    // GraphNode<int> node5;
-    // GraphNode<int> node6;
-    // GraphNode<int> node7;
-    // GraphNode<int> node8;
-    // std::vector<GraphNode<int> * > nodes = {&node0, &node1, &node2,&node3,&node4,&node5, &node6, &node7, &node8};
-
-    // //initial infections
-    // node0.infect();
-    // node2.infect();
-
-    // //setting connections
-
-    // Edge<int> edge0 (&node0, &node1);
-    // Edge<int> edge1 (&node1, &node4);
-    // Edge<int> edge2 (&node4, &node2);
-    // Edge<int> edge3 (&node2, &node5);
-    // Edge<int> edge4 (&node2, &node3);
-    // Edge<int> edge5 (&node6, &node5);
-    // Edge<int> edge6 (&node7, &node8);
     AVLGraph<int> avlGraph;
     std::vector<Edge<int> * > graph;
     std::vector<GraphNode<int> * > nodes;
@@ -94,14 +167,13 @@ int main(int argc, char *argv[]){
     avlGraph.setSimulationGraph(&graph);
     nodeCoordinates(400, 300, 100, nodes[0]->howMany(), &nodes);
   
-    GraphViewer viewer("Covid-19 Simulation", "../Work-Sans-1.50/fonts/desktop/WorkSans-Regular.otf", &menu, &avlGraph);
-
+    GraphViewer viewer("Stochastic Epidemic Simulator", "../Work-Sans-1.50/fonts/desktop/WorkSans-Regular.otf", &menu, &avlGraph);
     viewer.windowListener();
     
     return 0;
 }
 
-void signals_menu(int signal_num){ //acknowledge from the menu to end the program (ctrl-z) TODO or ask to be sure by (ctrl-c)
+void signals_menu(int signal_num){ // Acknowledge from the menu to end the program (Ctrl-z) TODO or ask to be sure by (Ctrl-c)
     char des;
     if( signal_num == 20){
     std::cout << '\n' << "finishing program..."<< std::endl;
@@ -122,6 +194,7 @@ void signals_menu(int signal_num){ //acknowledge from the menu to end the progra
     //     interrupted = 1;
     // }
 }
+
 void menu(AVLGraph<int> * tree){
     int sleepSize = 1;
     char ans = 'a';
@@ -129,8 +202,7 @@ void menu(AVLGraph<int> * tree){
     signal(SIGTSTP, signals_menu);
     // signal(SIGINT, signals_menu);
 
-    while (ans != 'q') //while (ans != 'q' && !interrupted)
-    {
+    while (ans != 'q'){ //while (ans != 'q' && !interrupted)
         std::cout << "\n== SIR Epidemic - Gillespie Algorithm ==\n";
         std::cout << "\tr. Run the simulation\n";
         std::cout << "\tq. Quit the program\n";
@@ -154,95 +226,80 @@ void menu(AVLGraph<int> * tree){
                 std::cin >> &ans;
         }
     }
-    // if (interrupted)
-    // {
-    // menu(tree);
-    // interrupted = 0;
-    // }
 }
-void signal_gillespie(int signal_num) { 
-    if( signal_num == 20){ //finish with enter ctrl-z
+
+void signal_gillespie(int signal_num){ 
+
+    if( signal_num == 20){ // Finish with enter Ctrl-z
         std::cout << "Finishing process...\n";
-        //std::cin.ignore( std::numeric_limits<std::streamsize>::max()); TODO make the Enter continue to finish
-        //std::cin.get();
         exit(SIGINT);
     }
-        //send to signaled to save the process and return wat it computed with ctrl-c
+
+    // Send to signaled to save the process and return wat it computed with Ctrl-c
     interrupted = 1;
-} 
+}
+
 void signaled(std::vector<Edge<int> * > * graph, std::vector<GraphNode<int> * > infectedNodes,std::vector<GraphNode<int> *> at_risk,int susc, double totalRecoveryRate, double totalInfectionRate,int infe){
     getInfected(graph, &infectedNodes);
     getAtRisk(graph, &susc, &at_risk);
     susc = at_risk.size();
+
     for (int i = 0; i < at_risk.size(); i++){
         totalInfectionRate += at_risk[i]->getTau();
     }
+
     int totalRate = totalInfectionRate + totalRecoveryRate;
     std::exponential_distribution<double> expDist (totalRate);
     std::cout << "End of algorithm..." << std::endl;
     std::cout << "Susceptible population: " << susc << std::endl;
     std::cout << "Infected population: " << infe << std::endl;
-    //sleep(10);
     //exit(SIGINT);
 }
 
-//inputs: the graph, recovery rate (gamma), initial infections (pointers to the nodes passed here)
-// and max number of iterations for the simulation
-int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int maxt, int graphSize, int sleepSize)
-{
-
+int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int maxt, int graphSize, int sleepSize){
     std::vector<GraphNode<int> * > infectedNodes;
     std::vector<GraphNode<int> * > at_risk = {};
     signal(SIGINT, signal_gillespie);
     signal(SIGTSTP, signal_gillespie);
 
-    //Getting initial infections
-    getInfected(graph, &infectedNodes);
+    getInfected(graph, &infectedNodes); // Getting initial infections
 
     std::cout << "Infected Nodes:" << std::endl;
 
-    for (int i = 0; i < infectedNodes.size(); i++)
-    {
+    for (int i = 0; i < infectedNodes.size(); i++){
         std::cout << "\tNode " << infectedNodes[i]->getindex() << std::endl;
     }
 
-    int susc = graphSize - infectedNodes.size(); //susceptible population 
-    int infe = infectedNodes.size(); //infected population
+    int susc = graphSize - infectedNodes.size(); // Susceptible population 
+    int infe = infectedNodes.size(); // Infected population
     double totalInfectionRate = 0;
     double totalRecoveryRate = 0;
     double totalRate = 0;
     double time;
 
-
-    // std::cout << "In iteration " << iteration << std::endl;
-
     getAtRisk(graph, &susc, &at_risk);
-    //initial at_risks
     std::cout << "At risk nodes:" << std::endl;
-    for (int i = 0; i < at_risk.size(); i++)
-    {
+
+    for (int i = 0; i < at_risk.size(); i++){
         std::cout << "Node" << at_risk[i]->getindex();
         std::cout << " | Changing tau" << std::endl;
         at_risk[i]->setTau(tau*at_risk[i]->getInfectedNeigh());
         totalInfectionRate += at_risk[i]->getTau();
     }
+
     totalRecoveryRate = gamma * infectedNodes.size();
     totalRate = totalInfectionRate + totalRecoveryRate;
     
     int seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::default_random_engine generator (seed);
 
-    std::exponential_distribution<double> expDist (totalRate); //exponential distribution
-
+    std::exponential_distribution<double> expDist (totalRate);
     time = expDist(generator);
 
-    //main algorithm loop
-    while (time < maxt && totalRate > 0 && !interrupted)
-    {
-        //taken from  https://en.cppreference.com/w/cpp/numeric/random/uniform_real_distribution
-        
-        std::random_device rd;  //Will be used to obtain a seed for the random number engine
-        std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+    while (time < maxt && totalRate > 0 && !interrupted){ // Main algorithm loop
+        // The following 5 lines are based on https://en.cppreference.com/w/cpp/numeric/random/uniform_real_distribution
+        std::random_device rd;
+        std::mt19937 gen(rd());
         std::default_random_engine genInt;
         std::uniform_real_distribution<double> realDis(0, totalRate);
         std::uniform_int_distribution<int> intDis(0, infectedNodes.size());
@@ -267,23 +324,19 @@ int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int m
             infe--;
             getInfected(graph, &infectedNodes);
             const auto t0 = std::clock();
-            while ((std::clock() - t0) / CLOCKS_PER_SEC < sleepSize)
-            {
+            while ((std::clock() - t0) / CLOCKS_PER_SEC < sleepSize){
                 int dummy;
                 volatile int * pdummy = &dummy;
-                for (int i = 0; i < 1000000; i++)
-                {
+                for (int i = 0; i < 1000000; i++){
                     *pdummy = i;
                 }
             }
 
         } else {
-            //TODO extract a node from at_risk with prob=at_risk[i]/totalInfectionRate
-            //leaving it as uniform distribution for testing (for now)
             std::uniform_int_distribution<> atRiskDis(0, at_risk.size());
             randIndex = atRiskDis(genInt);
-            if (!at_risk[randIndex]->isInfected())
-            {
+
+            if (!at_risk[randIndex]->isInfected()){
                 std::cout << "Node " << at_risk[randIndex]->getindex() << " was infected" << std::endl;
                 at_risk[randIndex]->infect();
                 infe++;
@@ -291,18 +344,19 @@ int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int m
                 getInfected(graph, &infectedNodes);
                 getAtRisk(graph, &susc, &at_risk);
                 const auto t0 = std::clock();
-                while ((std::clock() - t0) / CLOCKS_PER_SEC < sleepSize)
-                {
+
+                while ((std::clock() - t0) / CLOCKS_PER_SEC < sleepSize){
                     int dummy;
                     volatile int * pdummy = &dummy;
-                    for (int i = 0; i < 1000000; i++)
-                    {
+
+                    for (int i = 0; i < 1000000; i++){
                         *pdummy = i;
                     }
                 }
             }
         }
         susc = at_risk.size();
+
         for (int i = 0; i < at_risk.size(); i++){
             totalInfectionRate += at_risk[i]->getTau();
         }
@@ -312,126 +366,13 @@ int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int m
         std::exponential_distribution<double> expDist (totalRate);
         time = expDist(generator);
     }
-    if (interrupted)
-    {
+
+    if (interrupted){
         signaled(graph,infectedNodes,at_risk,susc, totalRecoveryRate, totalInfectionRate, infe);
         interrupted = 0;
-    }
-    else
-    {
-    
-    std::cout << "End of algorithm..." << std::endl;
-    std::cout << "Susceptible population: " << susc << std::endl;
-    std::cout << "Infected population: " << infe << std::endl;
-    }
-
-    return 0;
-}
-
-
-void getAtRisk(std::vector<Edge<int> * > * graph, int * susc, std::vector<GraphNode<int> * > * at_risk){
-    for (int i = 0; i < graph->size(); i++)
-    {
-        std::vector<GraphNode<int> * > nodes = (*graph)[i]->getConnectedNodes();
-        if (nodes[0]->isInfected() && std::find(at_risk->begin(), at_risk->end(), nodes[1])==at_risk->end())
-        {
-            at_risk->push_back(nodes[1]);
-            (*susc)--;
-            nodes[1]->neighborInfected();
-        }
-        else if (nodes[1]->isInfected() && std::find(at_risk->begin(), at_risk->end(), nodes[0])==at_risk->end())
-        {    
-            at_risk->push_back(nodes[0]);
-            (*susc)--;
-            nodes[0]->neighborInfected();
-        }
-        nodes.clear();
-    }
-    
-}
-
-void getInfected(std::vector<Edge<int> * > * graph, std::vector<GraphNode<int> * > * infected)
-{
-    for (int i = 0; i < graph->size(); i++)
-    {
-        std::vector<GraphNode<int> * > nodes = (*graph)[i]->getConnectedNodes();
-        if (nodes[0]->isInfected() && std::find(infected->begin(), infected->end(), nodes[0])==infected->end())
-            infected->push_back(nodes[0]);
-        else if (nodes[1]->isInfected() && std::find(infected->begin(), infected->end(), nodes[1])==infected->end())
-            infected->push_back(nodes[1]);
-        nodes.clear();
-    }
-}
-
-// To change the radius, xCenter and yCenter variables, modify the values in the config.txt file
-void nodeCoordinates(double xCenter, double yCenter, double radius, int steps, std::vector<GraphNode<int> * > * graph){ 
-	static double PI = 4*atan(1);
-	double change = (2*PI)/steps;
-	double circleCounter = change;
-    double x,y;
-    sf::Vector2f pos;
-    steps = 0;
-    x = y = 0;
-
-	for(; circleCounter <= 2*PI; circleCounter += change)
-    {
-        x = xCenter + (radius * (cos(circleCounter)));
-		y = yCenter + (radius * (sin(circleCounter)));
-        pos = sf::Vector2f(x,y);
-        (*graph)[steps]->setPos(pos);
-        std::cout << std::fixed << std::setprecision(20) << "Node " << steps <<  "\tX = " <<  pos.x << "\nY = " << pos.y << "\n" << std::endl;
-        steps ++;
-	}
-}
-
-void readGraph(const char * filename, std::vector<Edge<int> * > * graph, std::vector<GraphNode<int> * > * nodeVec)
-{
-    FILE * file = NULL;
-    char buffer[100];
-    int nodes = 0;
-    int nodeFrom = 0;
-    int nodeTo = 0;
-
-    file = fopen(filename, "r");
-
-    if (!file)
-    {
-        std::cerr << "\nUnable to open file " << filename << "\n";
-        exit(1);
-    }
-
-    fgets(buffer, 100, file);
-
-    int createdNodes = 0;
-    fscanf(file, "%d\n", &nodes);
-
-
-    while (createdNodes < nodes)
-    {
-        nodeVec->push_back(new GraphNode<int>);
-        createdNodes++;
-    }
-
-    createdNodes = 0;
-    std::cout << "nodeVec size" << nodeVec->size() << std::endl;
-
-    while (fscanf(file, "%d %d\n", &nodeFrom, &nodeTo) != EOF)
-    {
-        graph->push_back(new Edge<int> ((*nodeVec)[nodeFrom], (*nodeVec)[nodeTo]));
-        createdNodes++;
-    }
-} 
-
-void setRandomInfected(std::vector<GraphNode<int> * > * nodes)
-{
-    srand(time(NULL));
-    int no_infected = rand()%(nodes->size());
-    int randIndex = 0;
-    for (int i = 0; i < no_infected; i++)
-    {
-        srand(time(NULL));
-        randIndex = rand()%no_infected;
-        (*nodes)[randIndex]->infect();
-    }
-    
+    } else {
+        std::cout << "End of algorithm..." << std::endl;
+        std::cout << "Susceptible population: " << susc << std::endl;
+        std::cout << "Infected population: " << infe << std::endl;
+    } return 0;
 }

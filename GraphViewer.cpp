@@ -1,3 +1,33 @@
+/*------------------------------------------------- GraphViewer.cpp ------
+    |   Purpose: Serves as the graphical interface where the graph is
+    |       shown throughout the algorithm processing.
+    |
+    |   Functions:
+    |       GraphViewer::GraphViewer() - Initializes GUI.
+    |       GraphViewer::configure() - Sets values for the creation of the
+    |           graph.
+    |       GraphViewer::windowListener() - Listens for events that change
+    |           the interface behavior while running.
+    |       GraphViewer::resetScale() - Resets node size values to default.
+    |       GraphViewer::changeScale() - Changes node size values.
+    |       GraphViewer::mainDraw() - Calls helper functions to draw the 
+    |           graph.
+    |       GraphViewer::drawTitle() - Sets the title for the window.
+    |       GraphViewer::drawGraph() - Draws graph using the following two
+    |           helper functions.
+    |       GraphViewer::drawNode() - Draws a node.
+    |       GraphViewer::drawLine() - Draws the relation lines between
+    |           the nodes.
+    |
+    |   Developers:  
+    |       Carlos García - https://github.com/cxrlos
+    |       Victor Coeto - https://github.com/vcoetoG
+    |       Yann Le Lorier - https://github.com/yannlelorier
+    |       Template provided by Gilberto Echeverria - 
+    |           https://github.com/gilecheverria
+    |
+    *-------------------------------------------------------------------*/
+
 #include "GraphViewer.h"
 #include <iostream>
 #include <string>
@@ -65,12 +95,6 @@ void GraphViewer::windowListener(){
                     if (event.key.code == sf::Keyboard::R){
                         resetScale();
                     }
-                    /*
-                    if (event.key.code == sf::Keyboard::Add)
-                        speed+=10;
-                    if (event.key.code == sf::Keyboard::Subtract)
-                        speed-=10;
-                        */
                     break;
                 case sf::Event::MouseWheelMoved:
                     // The scrollwheel scales the nodes
@@ -126,8 +150,7 @@ void GraphViewer::changeScale(int multiplier){
     height.setCharacterSize(height_font_size);
 }
 
-void GraphViewer::mainDraw()
-{
+void GraphViewer::mainDraw(){
     // Keep track of the time elapsed since the last frame
     elapsed_time = clock.restart();
     total_time += elapsed_time;
@@ -146,8 +169,7 @@ void GraphViewer::drawTitle(){
     std::string radius_text;
     radius_text = std::to_string(circle.getRadius());
     radius_text = radius_text.substr(0, radius_text.length()-5);
-    title.setString("Graph Viewer\nTime elapsed: " + std::to_string(total_time.asSeconds()));
-    info.setString( "Radius: " + radius_text +"\nFont size: " + std::to_string(node_font_size));
+    title.setString("Epidemic Evolution Viewer\nTime elapsed: " + std::to_string(total_time.asSeconds()));
 
     window.draw(title);
     window.draw(info);

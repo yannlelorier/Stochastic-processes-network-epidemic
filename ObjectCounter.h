@@ -1,3 +1,14 @@
+/*------------------------------------------------- ObjectCounter.h ------
+    |   Purpose: Useful counter used by the gillespie.cpp function to
+    |       set boundaries for some functions.
+    |
+    |   Developers:  
+    |       Carlos García - https://github.com/cxrlos
+    |       Victor Coeto - https://github.com/vcoetoG
+    |       Yann Le Lorier - https://github.com/yannlelorier
+    |
+    *-------------------------------------------------------------------*/
+
 #ifndef OBJECT_COUNTER_H
 #define OBJECT_COUNTER_H
 
@@ -13,8 +24,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <stdlib.h>
-#include <csignal>//library for signals
-//#include <limits>//library to block the keyboard and ony enter for signal from control z
+#include <csignal>
 
 template<typename T>
 class Counter {

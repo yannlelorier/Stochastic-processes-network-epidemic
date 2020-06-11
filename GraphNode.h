@@ -1,3 +1,14 @@
+/*------------------------------------------------- GraphNode.cpp --------
+    |   Purpose: GraphNode class, contains the constructor as well as
+    |       some useful functions to get or set certain values.
+    |
+    |   Developers:  
+    |       Carlos García - https://github.com/cxrlos
+    |       Victor Coeto - https://github.com/vcoetoG
+    |       Yann Le Lorier - https://github.com/yannlelorier
+    |
+    *-------------------------------------------------------------------*/
+
 #ifndef GRAPH_NODE_H
 #define GRAPH_NODE_H
 
@@ -16,18 +27,16 @@ class GraphNode {
         sf::Vector2f pos;
         Counter<GraphNode<int> > c;
     public:
-        //default constructor
-        GraphNode ()
-        {
+        GraphNode (){ // Constructor
             index = howMany() - 1;
             infected = false;
             infectedNeighbors = 0;
             tau = 0.4;
             pos = sf::Vector2f (0,0);
         }
-        GraphNode (bool _infected)
-        { index = howMany() - 1; infected = _infected; }
-        ~GraphNode () {  } //empty vector
+
+        GraphNode (bool _infected){ index = howMany() - 1; infected = _infected; }
+        ~GraphNode () {  } // Empty vector
         void setindex (T _index) { index = _index; }
         T getindex () { return index; }
         void setHeight (int _height) { height = _height; }
@@ -42,5 +51,6 @@ class GraphNode {
         void infect() { infected = true; }
         void recover() { infected = false; }
         static size_t howMany() { return Counter<GraphNode<int>>::howMany(); }
+
 };
 #endif
