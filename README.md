@@ -89,5 +89,5 @@ make
 
 ## References
 
-I.Z. Kiss et al., *Mathematics of Epidemics on Networks*, Interdisciplinary Applied
+[Stochastic simulations of Epidemics](https://link.springer.com/content/pdf/bbm%3A978-3-319-50806-1%2F1.pdf), I.Z. Kiss et al., *Mathematics of Epidemics on Networks*, Interdisciplinary Applied
 Mathematics 46, DOI 10.1007/978-3-319-50806-1
