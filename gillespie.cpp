@@ -101,12 +101,35 @@ int main(int argc, char *argv[]){
     return 0;
 }
 
+void signals_menu(int signal_num){ //acknowledge from the menu to end the program (ctrl-z) TODO or ask to be sure by (ctrl-c)
+    char des;
+    if( signal_num == 20){
+    std::cout << '\n' << "finishing program..."<< std::endl;
+    exit(EXIT_SUCCESS);
+    }
+    // std::cout <<"\nProcess exited, are you sure? (Y/N)"<< std::endl;
+    // std::cin >> des;
+    // while(des != 'Y' || des != 'y' || des != 'N' || des != 'n')
+    // {
+    //     std::cin >> des ;
+    // }
+    // if (des == 'Y' || des == 'y'){
+    //     exit(SIGINT);
+    // }
+    // else if (des == 'N' || des == 'n')
+    // {
+    //     std::cout <<"Returning to program..."<< std::endl;
+    //     interrupted = 1;
+    // }
+}
 void menu(AVLGraph<int> * tree){
     int sleepSize = 1;
     char ans = 'a';
     std::vector<Edge<int> * > * graph_ptr;
+    signal(SIGTSTP, signals_menu);
+    // signal(SIGINT, signals_menu);
 
-    while (ans != 'q')
+    while (ans != 'q') //while (ans != 'q' && !interrupted)
     {
         std::cout << "\n== SIR Epidemic - Gillespie Algorithm ==\n";
         std::cout << "\tr. Run the simulation\n";
@@ -124,21 +147,27 @@ void menu(AVLGraph<int> * tree){
                 break;
             case 'q':
                 std::cout << "See you later" << std::endl;
-                exit(0);
-                break;
+                exit(EXIT_SUCCESS);
+                //break;
             default:
                 std::cout << "Invalid option. Try again ..." << std::endl;
-                break;
+                std::cin >> &ans;
         }
     }
+    // if (interrupted)
+    // {
+    // menu(tree);
+    // interrupted = 0;
+    // }
 }
-void signal_handler( int signal_num) { 
-    std::cout << "\nInterrupt signal is (" << signal_num << ").\n";
-    if( signal_num == 20){
-        //send to signaled and then store in the file 
-        exit(EXIT_SUCCESS);
+void signal_gillespie(int signal_num) { 
+    if( signal_num == 20){ //finish with enter ctrl-z
+        std::cout << "Finishing process...\n";
+        //std::cin.ignore( std::numeric_limits<std::streamsize>::max()); TODO make the Enter continue to finish
+        //std::cin.get();
+        exit(SIGINT);
     }
-    
+        //send to signaled to save the process and return wat it computed with ctrl-c
     interrupted = 1;
 } 
 void signaled(std::vector<Edge<int> * > * graph, std::vector<GraphNode<int> * > infectedNodes,std::vector<GraphNode<int> *> at_risk,int susc, double totalRecoveryRate, double totalInfectionRate,int infe){
@@ -153,7 +182,7 @@ void signaled(std::vector<Edge<int> * > * graph, std::vector<GraphNode<int> * > 
     std::cout << "End of algorithm..." << std::endl;
     std::cout << "Susceptible population: " << susc << std::endl;
     std::cout << "Infected population: " << infe << std::endl;
-    sleep(10);
+    //sleep(10);
     //exit(SIGINT);
 }
 
@@ -164,8 +193,8 @@ int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int m
 
     std::vector<GraphNode<int> * > infectedNodes;
     std::vector<GraphNode<int> * > at_risk = {};
-    signal(SIGINT, signal_handler);
-    signal(SIGTSTP, signal_handler);
+    signal(SIGINT, signal_gillespie);
+    signal(SIGTSTP, signal_gillespie);
 
     //Getting initial infections
     getInfected(graph, &infectedNodes);
@@ -208,7 +237,7 @@ int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int m
     time = expDist(generator);
 
     //main algorithm loop
-    while (time < maxt && totalRate > 0 && interrupted == 0)
+    while (time < maxt && totalRate > 0 && !interrupted)
     {
         //taken from  https://en.cppreference.com/w/cpp/numeric/random/uniform_real_distribution
         
@@ -283,9 +312,18 @@ int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int m
         std::exponential_distribution<double> expDist (totalRate);
         time = expDist(generator);
     }
+    if (interrupted)
+    {
+        signaled(graph,infectedNodes,at_risk,susc, totalRecoveryRate, totalInfectionRate, infe);
+        interrupted = 0;
+    }
+    else
+    {
+    
     std::cout << "End of algorithm..." << std::endl;
     std::cout << "Susceptible population: " << susc << std::endl;
     std::cout << "Infected population: " << infe << std::endl;
+    }
 
     return 0;
 }
@@ -358,7 +396,7 @@ void readGraph(const char * filename, std::vector<Edge<int> * > * graph, std::ve
 
     if (!file)
     {
-        std::cerr << "Unable to open file '" << filename << "'.\n";
+        std::cerr << "\nUnable to open file " << filename << "\n";
         exit(1);
     }
 

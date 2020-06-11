@@ -13,7 +13,8 @@
 #include <unistd.h>
 #include <time.h>
 #include <stdlib.h>
-#include <csignal> 
+#include <csignal>//library for signals
+//#include <limits>//library to block the keyboard and ony enter for signal from control z
 
 template<typename T>
 class Counter {
