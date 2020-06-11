@@ -1,5 +1,5 @@
 
-# Covid-19-tracker-simulator
+# Stochastic simulation of a network-based epidemic
 
 ## 1. Authors
 
@@ -9,7 +9,7 @@
 
 ## 2. Context
 
-The COVID-19 pandemic is rapidly spreading through the world. With this in view, we wanted to create a program using graph theory to study how a disease spreads through a population, using the classic Gillespie algorithm found [here](https://link.springer.com/content/pdf/bbm%3A978-3-319-50806-1%2F1.pdf).
+As of June 2020, the COVID-19 pandemic is rapidly spreading through the world. With this in view, we developerd a program using graph theory to study how a disease spreads through a population, using the classic Gillespie algorithm found [here](https://link.springer.com/content/pdf/bbm%3A978-3-319-50806-1%2F1.pdf).
 
 ## 3. Project Description
 
@@ -19,8 +19,8 @@ The Gillespie algorithm is a methodology that aims to track Markovian processes 
 
 #### 3.1.1 Input/Output
 
-- **Input** Network graph G, a transmission rate &tau;, a recovery rate &gamma;, a set of index node(s) of ```initial_infections```, maximum time t<sub>max</sub>
-- **Output** Lists time, S and I giving number in each state at each time, *i.e.* S := |G|-len(```infected_nodes```), I:=len(```infected_nodes```)
+- **Input** Network graph G, a transmission rate &tau;, a recovery rate &gamma;, a set of index node(s) of ```initial_infections```, maximum time t<sub>max</sub>\
+**Output** The Network graph G after it goes through the Gillespie function. 
 
 #### 3.1.2 Variables
 
@@ -44,17 +44,6 @@ The main loop iterating, until ```time``` &lt; t<sub>max</sub> and the ```total_
 - update total recovery rate, total infection rate, and total rate
 - ```time``` is updated as ```time + exponential_variate(total rate)```
 
-### 3.2 Execution of the project
-
-The following steps will be taken:
-
-- [ ] From a given file, the initial graph is read
-- [ ] The program may be stopped at any time by pressing CTRL+C or CTRL+Z
-- [ ] An output graph is dumped, to see the final result at a given time
-
-### 3.3 Progress
-
-![progress](https://progress-bar.dev/0/ "progress")
 
 ## 4. Topics
 
@@ -69,7 +58,7 @@ The following steps will be taken:
 
 ## 5. Use Cases
 
-We wish to see different snapshots at different periods of time, letting the algorithm take its course up until a certain point in time.
+The programs serves the pupose of being a close representation of a virus outburst in a static network environment. It is quite useful because it allows for different snapshots to be analyzed at different points in time.
 
 ## 6. Dependencies
 
@@ -79,13 +68,16 @@ We wish to see different snapshots at different periods of time, letting the alg
 
 ## 7. Running the program
 
+Read the [TemplateInstructions](https://github.com/yannlelorier/Covid-19-tracker-simulator/TemplateInstructions.txt) file to modify the [Nodes.txt](https://github.com/yannlelorier/Covid-19-tracker-simulator/Nodes.txt) file to your liking.
+
 ~~~sh
 mkdir build && cd build
 cmake ..
 make
-./covid-sim
+./program-name -i <inputFilename>
 ~~~
 
 ## References
 
-- [Stochastic simulations of Epidemics](https://link.springer.com/content/pdf/bbm%3A978-3-319-50806-1%2F1.pdf)
+I.Z. Kiss et al., *Mathematics of Epidemics on Networks*, Interdisciplinary Applied
+Mathematics 46, DOI 10.1007/978-3-319-50806-1

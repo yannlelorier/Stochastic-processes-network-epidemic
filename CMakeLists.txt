@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 
 project(covid-sim)
-SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=c++11 -pthread")
+SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=c++11 -pthread -g -pedantic")
 
 ## If you want to link SFML statically
 # set(SFML_STATIC_LIBRARIES TRUE)
