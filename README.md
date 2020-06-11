@@ -25,7 +25,7 @@ As of June 2020, the COVID-19 pandemic is rapidly spreading through the world. W
 
 ### 3. 1 The Gillespie algorithm
 
-The Gillespie algorithm is a methodology that aims to track Markovian processes where objects change status. In this case, we wish to use this algorithm in a given starting graph, see the end graph, and the changes over time. It is based on an epidemics model called SIR (Susceptible, Infected, Recovered).
+The Gillespie algorithm is a methodology that aims to track Markovian processes where objects change status. In this case, we wish to use this algorithm in a given starting graph, see the end graph, and the changes over time. It is based on the SIS model (Susceptible, Infected, Susceptible)
 
 #### 3.1.1 Input/Output
 
