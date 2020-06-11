@@ -19,8 +19,7 @@
 #include <math.h>
 #include <random>
 #include <unistd.h>
-=======
->>>>>>> 93076e40d2dc3d29d0f13f63558a75de38ffbc13
+
 #include "GraphViewer.h"
 #include "AVLGraph.h"
 #include "Edge.h"
@@ -220,12 +219,8 @@ int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int m
 
     time = expDist(generator);
 
-<<<<<<< HEAD
-    while (time < maxt && totalRate > 0 && interrupted == 0)
-=======
     //main algorithm loop
-    while (time < maxt && totalRate > 0)
->>>>>>> 93076e40d2dc3d29d0f13f63558a75de38ffbc13
+    while (time < maxt && totalRate > 0 && interrupted == 0)
     {
         //taken from  https://en.cppreference.com/w/cpp/numeric/random/uniform_real_distribution
         
