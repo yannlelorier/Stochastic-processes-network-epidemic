@@ -19,7 +19,7 @@
 
 ## 2. Context
 
-As of June 2020, the COVID-19 pandemic is rapidly spreading through the world. With this in view, we developerd a program using graph theory to study how a disease spreads through a population, using the classic Gillespie algorithm found [here](https://link.springer.com/content/pdf/bbm%3A978-3-319-50806-1%2F1.pdf).
+As of June 2020, the COVID-19 pandemic is rapidly spreading through the world. With this in view, it may be relevant to study how a disease spreads through a population, using the classic Gillespie algorithm found [here](https://link.springer.com/content/pdf/bbm%3A978-3-319-50806-1%2F1.pdf).
 
 ## 3. Project Description
 
