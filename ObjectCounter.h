@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <stdlib.h>
+#include <csignal> 
 
 template<typename T>
 class Counter {

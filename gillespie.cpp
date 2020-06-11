@@ -12,6 +12,7 @@
 
 // Define a maximum limit for the random numbers
 #define MAX 200
+int interrupted = 0;
 
 void menu(AVLGraph<int> * tree);
 void nodeCoordinates(double xCenter, double yCenter, double radius, int steps, std::vector<GraphNode<int> * > * graph);
@@ -131,7 +132,30 @@ void menu(AVLGraph<int> * tree){
         }
     }
 }
-
+void signal_handler( int signal_num) { 
+    std::cout << "\nInterrupt signal is (" << signal_num << ").\n";
+    if( signal_num == 20){
+        //send to signaled and then store in the file 
+        exit(EXIT_SUCCESS);
+    }
+    
+    interrupted = 1;
+} 
+void signaled(std::vector<Edge<int> * > * graph, std::vector<GraphNode<int> * > infectedNodes,std::vector<GraphNode<int> *> at_risk,int susc, double totalRecoveryRate, double totalInfectionRate,int infe){
+    getInfected(graph, &infectedNodes);
+    getAtRisk(graph, &susc, &at_risk);
+    susc = at_risk.size();
+    for (int i = 0; i < at_risk.size(); i++){
+        totalInfectionRate += at_risk[i]->getTau();
+    }
+    int totalRate = totalInfectionRate + totalRecoveryRate;
+    std::exponential_distribution<double> expDist (totalRate);
+    std::cout << "End of algorithm..." << std::endl;
+    std::cout << "Susceptible population: " << susc << std::endl;
+    std::cout << "Infected population: " << infe << std::endl;
+    sleep(10);
+    //exit(SIGINT);
+}
 
 //inputs: the graph, recovery rate (gamma), initial infections (pointers to the nodes passed here)
 // and max number of iterations for the simulation
@@ -140,6 +164,8 @@ int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int m
 
     std::vector<GraphNode<int> * > infectedNodes;
     std::vector<GraphNode<int> * > at_risk = {};
+    signal(SIGINT, signal_handler);
+    signal(SIGTSTP, signal_handler);
 
     //Getting initial infections
     getInfected(graph, &infectedNodes);
@@ -182,7 +208,7 @@ int gillespie(std::vector<Edge<int> * > * graph, double tau, double gamma, int m
     time = expDist(generator);
 
     //main algorithm loop
-    while (time < maxt && totalRate > 0)
+    while (time < maxt && totalRate > 0 && interrupted == 0)
     {
         //taken from  https://en.cppreference.com/w/cpp/numeric/random/uniform_real_distribution
         
